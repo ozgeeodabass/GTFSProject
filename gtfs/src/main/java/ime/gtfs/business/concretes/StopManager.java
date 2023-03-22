@@ -3,6 +3,8 @@ package ime.gtfs.business.concretes;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 
@@ -82,6 +84,20 @@ public class StopManager implements StopService {
 			// add to list
 			stops.add(stop);
 		}
+		
+		Comparator<Stop> locationComparator = new Comparator<Stop>() {
+		    @Override
+		    public int compare(Stop location1, Stop location2) {
+		        int latComparison = Double.compare(location1.getStopLat(), location2.getStopLat());
+		        if (latComparison != 0) {
+		            return latComparison;
+		        }
+		        return Double.compare(location1.getStopLon(), location2.getStopLon());
+		    }
+		};
+		
+		
+		Collections.sort(stops, locationComparator);
 
 		// add to db
 		for (Stop stop : stops) {

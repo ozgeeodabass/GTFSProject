@@ -35,10 +35,14 @@ public class BusController {
 		return this.busService.add(bus);
 	}
 
-	@PostMapping("/readfromtxtpushtodbBus/{textName}")
-	@ResponseBody
-	public String readFromTxtPushToDb(@PathVariable(value = "textName") String textName) throws FileNotFoundException {
-		return this.busService.readFromTxtPushToDb(textName);
+	@GetMapping("/busSimulation")
+	public void startSimulation() {
+		this.busService.startSimulation();
 	}
-
+	
+	@GetMapping("/startBus/{busId}")
+	@ResponseBody
+	public void startBus(@PathVariable(value="busId") int busId) {
+		this.busService.startBus(busId);
+	}
 }

@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,6 +47,7 @@ public class StopTime {
 	private Stop stop;
 	
 	@Column(name = "stop_sequence")
+	@Min(value = 0)
 	private int stopSequence;
 	
 	@Column(name="timepoint")

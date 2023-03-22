@@ -42,4 +42,5 @@ public class TripsController {
 		return this.tripService.readFromTxtPushToDb(textName);
 	}
 
+
 }

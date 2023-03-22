@@ -76,6 +76,8 @@ public class CalendarManager implements CalendarService {
 
 			String[] fields = line.split(",");
 			calendar.setServiceId(Integer.valueOf(fields[0]));
+			
+			
 			calendar.setMonday(Integer.valueOf(fields[1]));
 			calendar.setTuesday(Integer.valueOf(fields[2]));
 			calendar.setWednesday(Integer.valueOf(fields[3]));

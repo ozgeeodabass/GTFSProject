@@ -12,9 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ime.gtfs.business.abstracts.StopTimeService;
+import ime.gtfs.dataAccess.abstracts.RouteRepository;
 import ime.gtfs.dataAccess.abstracts.StopRepository;
 import ime.gtfs.dataAccess.abstracts.StopTimeRepository;
 import ime.gtfs.dataAccess.abstracts.TripRepository;
+import ime.gtfs.entities.Route;
 import ime.gtfs.entities.StopTime;
 import ime.gtfs.entities.Trip;
 
@@ -24,14 +26,17 @@ public class StopTimeManager implements StopTimeService {
 	private StopTimeRepository stopTimeRepository;
 	private StopRepository stopRepository;
 	private TripRepository tripRepository;
+	private RouteRepository routeRepository;
 
+	
 	@Autowired
 	public StopTimeManager(StopTimeRepository stopTimeRepository, StopRepository stopRepository,
-			TripRepository tripRepository) {
+			TripRepository tripRepository, RouteRepository routeRepository) {
 		super();
 		this.stopTimeRepository = stopTimeRepository;
 		this.stopRepository = stopRepository;
 		this.tripRepository = tripRepository;
+		this.routeRepository = routeRepository;
 	}
 
 	@Override
@@ -73,7 +78,6 @@ public class StopTimeManager implements StopTimeService {
 		// get column data from lines
 		List<String> dataWithoutFirstLine = new ArrayList<String>();
 
-		// 103. satıra kadar aldım. yani route idsi 5 olanlar
 		for (int i = 1; i < lines.size(); i++) {
 			dataWithoutFirstLine.add(lines.get(i));
 		}
@@ -81,9 +85,9 @@ public class StopTimeManager implements StopTimeService {
 		// process txt data
 		List<StopTime> stopTimes = new ArrayList<StopTime>();
 
-		List<Trip> tripsWithId5 = this.tripRepository.findAllByRoute_RouteId(5);
+		List<Trip> trips = tripRepository.findAll();
 		List<Integer> idsOfTrips = new ArrayList<Integer>();
-		for (Trip trip : tripsWithId5) {
+		for (Trip trip : trips) {
 			idsOfTrips.add(trip.getTripId());
 		}
 
@@ -136,7 +140,7 @@ public class StopTimeManager implements StopTimeService {
 			this.add(stopTime);
 
 		}
-		return "Veritabanına kaydedildi.";
+		return "Veritabanına kaydedildi." ;
 		
 	}
 

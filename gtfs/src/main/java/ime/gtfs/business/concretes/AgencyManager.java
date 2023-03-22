@@ -2,6 +2,7 @@ package ime.gtfs.business.concretes;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ime.gtfs.business.abstracts.AgencyService;
+import ime.gtfs.core.utilities.UnzipUtility;
 import ime.gtfs.dataAccess.abstracts.AgencyRepository;
 import ime.gtfs.entities.Agency;
 
@@ -53,7 +55,7 @@ public class AgencyManager implements AgencyService {
 			String line = scanner.nextLine();
 			lines.add(line);
 		}
-
+		
 		scanner.close();
 
 		// get column data from lines

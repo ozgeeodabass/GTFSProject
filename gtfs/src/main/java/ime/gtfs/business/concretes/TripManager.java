@@ -13,6 +13,7 @@ import ime.gtfs.business.abstracts.TripService;
 import ime.gtfs.dataAccess.abstracts.CalendarRepository;
 import ime.gtfs.dataAccess.abstracts.RouteRepository;
 import ime.gtfs.dataAccess.abstracts.TripRepository;
+import ime.gtfs.entities.Route;
 import ime.gtfs.entities.Trip;
 
 @Service
@@ -67,7 +68,7 @@ public class TripManager implements TripService {
 		// get column data from lines
 		List<String> dataWithoutFirstLine = new ArrayList<String>();
 
-		for (int i = 1; i <=102; i++) {
+		for (int i = 1; i <lines.size(); i++) {
 			dataWithoutFirstLine.add(lines.get(i));
 		}
 
@@ -109,6 +110,16 @@ public class TripManager implements TripService {
 		System.out.println("Eklendi");
 		return tripr.toString();
 	}
+
+	@Override
+	public List<Trip> findAllByRoute(Route route) {
+		 List<Trip> trips = this.tripRepository.findAllByRoute(route);
+		 return trips;
+	}
+	
+	
+		
+		
 	
 	
 
