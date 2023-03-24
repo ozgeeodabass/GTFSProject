@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ import lombok.Setter;
 public class StopTime {
 	
 	@Id
+	@PrimaryKeyJoinColumn
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int stopTimeId;
 	

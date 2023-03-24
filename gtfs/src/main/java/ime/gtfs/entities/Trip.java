@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +26,7 @@ import lombok.Setter;
 public class Trip {
 
 	@Id
+	@PrimaryKeyJoinColumn
 	private int tripId;
 
 	@Column(name = "direction_id")
@@ -54,6 +55,11 @@ public class Trip {
 	@ManyToOne
 	@JoinColumn(name = "bus_id")
 	private Bus bus;
+	
+	@ManyToOne
+	@JoinColumn(name = "shape_id")
+	private Shape shape;
+	
 
 	
 }

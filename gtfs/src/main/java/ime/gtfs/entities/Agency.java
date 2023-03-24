@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,7 @@ import lombok.Setter;
 public class Agency {
 
 	@Id
+	@PrimaryKeyJoinColumn
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int agencyId;
 	

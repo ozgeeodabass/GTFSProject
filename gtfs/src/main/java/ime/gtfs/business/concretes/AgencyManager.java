@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ime.gtfs.business.abstracts.AgencyService;
-import ime.gtfs.core.utilities.UnzipUtility;
 import ime.gtfs.dataAccess.abstracts.AgencyRepository;
 import ime.gtfs.entities.Agency;
 
@@ -46,8 +45,10 @@ public class AgencyManager implements AgencyService {
 
 	@Override
 	public String readFromTxtPushToDb(String txtName) throws FileNotFoundException {
+
 		File file = new File(txtName);
-		List<String> lines = new ArrayList<String>();
+		List<String> lines = new ArrayList<>();
+		List<String> dataWithoutColumnNames = new ArrayList<>();
 
 		Scanner scanner = new Scanner(file);
 
@@ -55,26 +56,64 @@ public class AgencyManager implements AgencyService {
 			String line = scanner.nextLine();
 			lines.add(line);
 		}
-		
+
 		scanner.close();
 
-		// get column data from lines
-		List<String> dataWithoutFirstLine = new ArrayList<String>();
-
 		for (int i = 1; i < lines.size(); i++) {
-			dataWithoutFirstLine.add(lines.get(i));
+			dataWithoutColumnNames.add(lines.get(i));
 		}
 
-		// process txt data
-		List<Agency> agencies = new ArrayList<Agency>();
-		for (String line : dataWithoutFirstLine) {
-			Agency agency = new Agency();
+		String columns = lines.get(0);
+		List<String> columnNames = new ArrayList<String>();
 
+		for (String col : columns.split(",")) {
+			columnNames.add(col);
+		}
+
+		List<Agency> agencies = new ArrayList<Agency>();
+
+		for (String line : dataWithoutColumnNames) {
+			Agency agency = new Agency();
 			String[] fields = line.split(",");
-			agency.setAgencyId(Integer.valueOf(fields[0]));
-			agency.setAgencyName(fields[1]);
-			agency.setAgencyUrl(fields[2]);
-			agency.setAgencyTimezone(fields[3]);
+
+			for (String column : columnNames) {
+				switch (column) {
+				case "agency_id": {
+					int indexOfCol = columnNames.indexOf(column);
+					String data = fields[indexOfCol];
+					agency.setAgencyId(Integer.valueOf(data));
+					break;
+				}
+				case "agency_name": {
+					int indexOfCol = columnNames.indexOf(column);
+					String data = fields[indexOfCol];
+					agency.setAgencyName(data);
+					break;
+				}
+				case "agency_url": {
+					int indexOfCol = columnNames.indexOf(column);
+					String data = fields[indexOfCol];
+					agency.setAgencyUrl(data);
+					break;
+				}
+				case "agency_timezone": {
+					int indexOfCol = columnNames.indexOf(column);
+					String data = fields[indexOfCol];
+					agency.setAgencyTimezone(data);
+					break;
+				}
+				case "agency_phone":
+					break;
+				case "agency_lang":
+					break;
+				case "agency_fare_url":
+					break;
+				case "agency_email":
+					break;
+				default:
+					throw new IllegalArgumentException("Unexpected value: " + column);
+				}
+			}
 
 			// add to list
 			agencies.add(agency);
@@ -83,8 +122,8 @@ public class AgencyManager implements AgencyService {
 		// add to db
 		for (Agency agency : agencies) {
 			this.add(agency);
-
 		}
+
 		return "Veritabanına kaydedildi.";
 
 	}
@@ -98,6 +137,82 @@ public class AgencyManager implements AgencyService {
 		this.agencyRepository.save(agencyr);
 		System.out.println("Eklendi");
 		return agencyr.toString();
+
+	}
+
+	@Override
+	public String readFromCsvPushToDb(String csvName) throws IOException {
+		List<String> records = new ArrayList<>();
+		List<String> dataWithoutColumnNames = new ArrayList<>();
+
+		try (Scanner scanner = new Scanner(new File(csvName));) {
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				records.add(line);
+
+			}
+		}
+
+		for (int i = 1; i < records.size(); i++) {
+			dataWithoutColumnNames.add(records.get(i));
+		}
+
+		List<String> columns = new ArrayList<String>();
+
+		for (String col : records.get(0).split(",")) {
+			columns.add(col);
+		}
+
+		List<Agency> agencies = new ArrayList<Agency>();
+
+		for (String dataLine : dataWithoutColumnNames) {
+			Agency agency = new Agency();
+
+			String[] fields = dataLine.split(",");
+
+			for (String columnName : columns) {
+				switch (columnName) {
+				case "agency_id": {
+					int colIndex = columns.indexOf(columnName);
+					String colData = fields[colIndex];
+					agency.setAgencyId(Integer.valueOf(colData));
+					break;
+				}
+				case "agency_name": {
+					int colIndex = columns.indexOf(columnName);
+					String colData = fields[colIndex];
+					agency.setAgencyName(colData);
+					break;
+				}
+				case "agency_url": {
+					int colIndex = columns.indexOf(columnName);
+					String colData = fields[colIndex];
+					agency.setAgencyUrl(colData);
+					break;
+				}
+				case "agency_timezone": {
+					int colIndex = columns.indexOf(columnName);
+					String colData = fields[colIndex];
+					agency.setAgencyTimezone(colData);
+					break;
+				}
+				default:
+					throw new IllegalArgumentException("Unexpected value: " + columnName);
+
+				}
+			}
+
+			// add to list
+			agencies.add(agency);
+
+		}
+
+		// add to db
+		for (Agency agency : agencies) {
+			this.add(agency);
+
+		}
+		return "Veritabanına kaydedildi.";
 
 	}
 

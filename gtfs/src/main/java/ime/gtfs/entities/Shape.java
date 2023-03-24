@@ -9,10 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -25,33 +22,25 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "bus")
-public class Bus {
+@Table(name = "shapes")
+public class Shape {
 	
 	@Id
-	@PrimaryKeyJoinColumn
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int busId;
+	private int shapeId;
 	
-	/*
-	 * //800 gibi
-	 * 
-	 * @Column(name = "bus_code") private String busCode; //bu route_short_name mi
-	 * olmalı?
-	 */	
+	@Column(name="shape_pt_lat")
+	private double shapePtLat;
 	
-	@ManyToOne
-	@JoinColumn(name = "route_id")
-	private Route route;
+	@Column(name="shape_pt_lon")
+	private double shapePtLon;
 	
-	@ManyToOne()
-	@JoinColumn(name = "agency_id")
-	private Agency agency;
+	@Column(name="shape_pt_sequence")
+	//@Min(0)
+	private int shapePtSequence;
 	
-	@OneToMany(mappedBy = "bus")
+	@OneToMany(mappedBy ="shape")
 	@JsonIgnore
-	private List<Trip> trips;
+	private List<Trip> trips; 
 	
 	
-
 }
