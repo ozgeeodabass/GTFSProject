@@ -52,13 +52,6 @@ public class CalendarManager implements CalendarService {
 	public String readFromTxtPushToDb(String txtName) throws FileNotFoundException {
 		File file = new File(txtName);
 		List<String> lines = new ArrayList<String>();
-		
-		// get column data from lines
-		List<String> dataWithoutFirstLine = new ArrayList<String>();
-
-		for (int i = 1; i < lines.size(); i++) {
-			dataWithoutFirstLine.add(lines.get(i));
-		}
 
 		Scanner scanner = new Scanner(file);
 
@@ -68,24 +61,30 @@ public class CalendarManager implements CalendarService {
 		}
 
 		scanner.close();
-		
-		//get columns names
+
+		// get column data from lines
+		List<String> dataWithoutFirstLine = new ArrayList<String>();
+
+		for (int i = 1; i < lines.size(); i++) {
+			dataWithoutFirstLine.add(lines.get(i));
+		}
+
+		// get columns names
 		String columns = lines.get(0);
 		List<String> columnNames = new ArrayList<String>();
 
 		for (String col : columns.split(",")) {
 			columnNames.add(col);
 		}
-		
 
 		// process txt data
 		List<Calendar> calendars = new ArrayList<Calendar>();
-		
+
 		for (String line : dataWithoutFirstLine) {
 			Calendar calendar = new Calendar();
 
 			String[] fields = line.split(",");
-			
+
 			for (String column : columnNames) {
 				switch (column) {
 				case "service_id": {
@@ -153,43 +152,18 @@ public class CalendarManager implements CalendarService {
 				default:
 					throw new IllegalArgumentException("Unexpected value: " + column);
 				}
-				
-				
-				
 			}
+
 			// add to list
-				calendars.add(calendar);
-			
-			/*
-			 * 
-			 * calendar.setServiceId(Integer.valueOf(fields[0]));
-			 * 
-			 * calendar.setMonday(Integer.valueOf(fields[1]));
-			 * calendar.setTuesday(Integer.valueOf(fields[2]));
-			 * calendar.setWednesday(Integer.valueOf(fields[3]));
-			 * calendar.setThursday(Integer.valueOf(fields[4]));
-			 * calendar.setFriday(Integer.valueOf(fields[5]));
-			 * calendar.setSaturday(Integer.valueOf(fields[6]));
-			 * calendar.setSunday(Integer.valueOf(fields[7]));
-			 * 
-			 * // String to date // for startDate String startDateString = fields[8];
-			 * LocalDate startDate = LocalDate.parse(startDateString,
-			 * DateTimeFormatter.BASIC_ISO_DATE);
-			 * 
-			 * // for endDate String endDateString = fields[9]; LocalDate endDate =
-			 * LocalDate.parse(endDateString, DateTimeFormatter.BASIC_ISO_DATE);
-			 * 
-			 * calendar.setStartDate(startDate); calendar.setEndDate(endDate);
-			 * 
-			 * // add to list calendars.add(calendar);
-			 */
+			calendars.add(calendar);
 		}
 
 		// add to db
 		for (Calendar calendar : calendars) {
 			this.add(calendar);
-
+			System.out.println(calendar.getServiceId() + " kaydedildi");
 		}
+
 		return "Veritabanına kaydedildi.";
 	}
 
@@ -197,15 +171,16 @@ public class CalendarManager implements CalendarService {
 	public String add(Calendar calendar) {
 		Calendar calendarr = new Calendar();
 		calendarr.setServiceId(calendar.getServiceId());
-		calendarr.setStartDate(calendar.getStartDate());
-		calendarr.setEndDate(calendar.getEndDate());
 		calendarr.setMonday(calendar.getMonday());
+		calendarr.setTuesday(calendar.getTuesday());
+		calendarr.setWednesday(calendar.getWednesday());
+		calendarr.setThursday(calendar.getThursday());
 		calendarr.setFriday(calendar.getFriday());
 		calendarr.setSaturday(calendar.getSaturday());
 		calendarr.setSunday(calendar.getSunday());
-		calendarr.setThursday(calendar.getThursday());
-		calendarr.setTuesday(calendar.getTuesday());
-		calendarr.setWednesday(calendar.getWednesday());
+		calendarr.setStartDate(calendar.getStartDate());
+		calendarr.setEndDate(calendar.getEndDate());
+
 		this.calendarRepository.save(calendarr);
 		System.out.println("Eklendi");
 		return calendarr.toString();

@@ -16,7 +16,6 @@ import ime.gtfs.dataAccess.abstracts.RouteRepository;
 import ime.gtfs.dataAccess.abstracts.StopRepository;
 import ime.gtfs.dataAccess.abstracts.StopTimeRepository;
 import ime.gtfs.dataAccess.abstracts.TripRepository;
-import ime.gtfs.entities.Route;
 import ime.gtfs.entities.StopTime;
 import ime.gtfs.entities.Trip;
 
@@ -28,7 +27,6 @@ public class StopTimeManager implements StopTimeService {
 	private TripRepository tripRepository;
 	private RouteRepository routeRepository;
 
-	
 	@Autowired
 	public StopTimeManager(StopTimeRepository stopTimeRepository, StopRepository stopRepository,
 			TripRepository tripRepository, RouteRepository routeRepository) {
@@ -60,7 +58,6 @@ public class StopTimeManager implements StopTimeService {
 		return stopTimesResponse;
 	}
 
-	
 	@Override
 	public String readFromTxtPushToDb(String txtName) throws FileNotFoundException, ParseException {
 		File file = new File(txtName);
@@ -82,6 +79,14 @@ public class StopTimeManager implements StopTimeService {
 			dataWithoutFirstLine.add(lines.get(i));
 		}
 
+		// get columns names
+		String columns = lines.get(0);
+		List<String> columnNames = new ArrayList<String>();
+
+		for (String col : columns.split(",")) {
+			columnNames.add(col);
+		}
+
 		// process txt data
 		List<StopTime> stopTimes = new ArrayList<StopTime>();
 
@@ -97,39 +102,112 @@ public class StopTimeManager implements StopTimeService {
 			String[] fields = line.split(",");
 
 			if (idsOfTrips.contains(Integer.valueOf(fields[0]))) {
-				
-				stopTime.setStop(stopRepository.findById(Integer.valueOf(fields[3])).get());
-				stopTime.setTrip(tripRepository.findById(Integer.valueOf(fields[0])).get()); 
-				
+
+				for (String column : columnNames) {
+					switch (column) {
+					case "trip_id": {
+						int indexOfCol = columnNames.indexOf(column);
+						String data = fields[indexOfCol];
+						stopTime.setTrip(tripRepository.findById(Integer.valueOf(data)).get());
+						break;
+					}
+					case "arrival_time": {
+						int indexOfCol = columnNames.indexOf(column);
+						String data = fields[indexOfCol];
+						int arrivalTimeHour = Integer.valueOf(data.substring(0, 2));
+						if (arrivalTimeHour == 24) {
+							arrivalTimeHour = 00;
+						}
+						int arrivalTimeMinute = Integer.valueOf(data.substring(3, 5));
+						int arrivalTimeSecond = Integer.valueOf(data.substring(6));
+						LocalTime timeArrival = LocalTime.of(arrivalTimeHour, arrivalTimeMinute, arrivalTimeSecond);
+						stopTime.setArrivalTime(timeArrival);
+						break;
+					}
+					case "departure_time": {
+						int indexOfCol = columnNames.indexOf(column);
+						String data = fields[indexOfCol];
+						int departureTimeHour = Integer.valueOf(data.substring(0, 2));
+						if (departureTimeHour == 24) {
+							departureTimeHour = 00;
+						}
+						int departureTimeMinute = Integer.valueOf(data.substring(3, 5));
+						int departureTimeSecond = Integer.valueOf(data.substring(6));
+						LocalTime timeDeparture = LocalTime.of(departureTimeHour, departureTimeMinute,
+								departureTimeSecond);
+						stopTime.setDepartureTime(timeDeparture);
+						break;
+					}
+					case "stop_id": {
+						int indexOfCol = columnNames.indexOf(column);
+						String data = fields[indexOfCol];
+						stopTime.setStop(stopRepository.findById(Integer.valueOf(data)).get());
+						break;
+					}
+					case "stop_sequence": {
+						int indexOfCol = columnNames.indexOf(column);
+						String data = fields[indexOfCol];
+						stopTime.setStopSequence(Integer.valueOf(data));
+						break;
+					}
+					case "timepoint": {
+						int indexOfCol = columnNames.indexOf(column);
+						String data = fields[indexOfCol];
+						stopTime.setTimePoint(Integer.valueOf(data));
+						break;
+					}
+					case "stop_headsign": {
+						break;
+					}
+					case "pickup_type": {
+						break;
+					}
+					case "drop_off_type": {
+						break;
+					}
+					case "continuous_pickup": {
+						break;
+					}
+					case "continuous_drop_off": {
+						break;
+					}
+					case "shape_dist_traveled": {
+						break;
+					}
+					default:
+						throw new IllegalArgumentException("Unexpected value: " + column);
+					}
+				}
+
 				/*
+				 * stopTime.setStop(stopRepository.findById(Integer.valueOf(fields[3])).get());
+				 * stopTime.setTrip(tripRepository.findById(Integer.valueOf(fields[0])).get());
+				 * 
+				 * 
 				 * String arrivalTimeString = fields[1]; LocalTime arrivalTime =
 				 * LocalTime.parse(arrivalTimeString, DateTimeFormatter.ISO_LOCAL_TIME);
 				 * 
 				 * String departureTimeString = fields[2]; LocalTime departureTime =
 				 * LocalTime.parse(departureTimeString, DateTimeFormatter.ISO_LOCAL_TIME);
+				 * 
+				 * 
+				 * int arrivalTimeHour = Integer.valueOf(fields[1].substring(0, 2)); if
+				 * (arrivalTimeHour == 24) { arrivalTimeHour = 00; } int arrivalTimeMinute =
+				 * Integer.valueOf(fields[1].substring(3, 5)); int arrivalTimeSecond =
+				 * Integer.valueOf(fields[1].substring(6)); LocalTime timeArrival =
+				 * LocalTime.of(arrivalTimeHour, arrivalTimeMinute, arrivalTimeSecond);
+				 * 
+				 * int departureTimeHour = Integer.valueOf(fields[2].substring(0, 2)); if
+				 * (departureTimeHour == 24) { departureTimeHour = 00; } int departureTimeMinute
+				 * = Integer.valueOf(fields[2].substring(3, 5)); int departureTimeSecond =
+				 * Integer.valueOf(fields[2].substring(6)); LocalTime timeDeparture =
+				 * LocalTime.of(departureTimeHour, departureTimeMinute, departureTimeSecond);
+				 * 
+				 * stopTime.setArrivalTime(timeArrival);
+				 * stopTime.setDepartureTime(timeDeparture);
+				 * stopTime.setStopSequence(Integer.valueOf(fields[4]));
+				 * stopTime.setTimePoint(Integer.valueOf(fields[5]));
 				 */
-				
-				int arrivalTimeHour = Integer.valueOf(fields[1].substring(0,2));
-				if (arrivalTimeHour==24) {
-					arrivalTimeHour=00;
-				}
-				int arrivalTimeMinute = Integer.valueOf(fields[1].substring(3,5));
-				int arrivalTimeSecond = Integer.valueOf(fields[1].substring(6));
-				LocalTime timeArrival = LocalTime.of(arrivalTimeHour,arrivalTimeMinute,arrivalTimeSecond);
-				
-				int departureTimeHour = Integer.valueOf(fields[2].substring(0,2));
-				if (departureTimeHour==24) {
-					departureTimeHour=00;
-				}
-				int departureTimeMinute = Integer.valueOf(fields[2].substring(3,5));
-				int departureTimeSecond = Integer.valueOf(fields[2].substring(6));
-				LocalTime timeDeparture = LocalTime.of(departureTimeHour,departureTimeMinute,departureTimeSecond);
-				
-				stopTime.setArrivalTime(timeArrival);
-				stopTime.setDepartureTime(timeDeparture);
-				stopTime.setStopSequence(Integer.valueOf(fields[4]));
-				stopTime.setTimePoint(Integer.valueOf(fields[5]));
-
 				// add to list
 				stopTimes.add(stopTime);
 			}
@@ -140,8 +218,8 @@ public class StopTimeManager implements StopTimeService {
 			this.add(stopTime);
 
 		}
-		return "Veritabanına kaydedildi." ;
-		
+		return "Veritabanına kaydedildi.";
+
 	}
 
 	@Override

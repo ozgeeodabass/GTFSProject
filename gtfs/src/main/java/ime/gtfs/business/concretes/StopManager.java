@@ -65,38 +65,98 @@ public class StopManager implements StopService {
 			dataWithoutFirstLine.add(lines.get(i));
 		}
 
+		// get columns names
+		String columns = lines.get(0);
+		List<String> columnNames = new ArrayList<String>();
+
+		for (String col : columns.split(",")) {
+			columnNames.add(col);
+		}
+
 		// process txt data
 		List<Stop> stops = new ArrayList<Stop>();
+
 		for (String line : dataWithoutFirstLine) {
 			Stop stop = new Stop();
 
 			String[] fields = line.split(",");
-			stop.setStopId(Integer.valueOf(fields[0]));
-			stop.setStopName(fields[1]);
 
-			double lat =Double.parseDouble((fields[2])) ;
-			stop.setStopLat(lat);
-			
-			double lon =Double.parseDouble((fields[3])) ;
-			stop.setStopLon(lon);
-			
+			for (String column : columnNames) {
+				switch (column) {
+				case "stop_id": {
+					int indexOfCol = columnNames.indexOf(column);
+					String data = fields[indexOfCol];
+					stop.setStopId(Integer.valueOf(data));
+					break;
+				}
+				case "stop_name": {
+					int indexOfCol = columnNames.indexOf(column);
+					String data = fields[indexOfCol];
+					stop.setStopName(data);
+					break;
+				}
+				case "stop_lat": {
+					int indexOfCol = columnNames.indexOf(column);
+					String data = fields[indexOfCol];
+					stop.setStopLat(Double.parseDouble(data));
+					break;
+				}
+				case "stop_lon": {
+					int indexOfCol = columnNames.indexOf(column);
+					String data = fields[indexOfCol];
+					stop.setStopLon(Double.parseDouble(data));
+					break;
+				}
+				case "stop_code": {
+					break;
+				}
+				case "stop_desc": {
+					break;
+				}
+				case "zone_id": {
+					break;
+				}
+				case "stop_url": {
+					break;
+				}
+				case "location_type": {
+					break;
+				}
+				case "parent_station": {
+					break;
+				}
+				case "stop_timezone": {
+					break;
+				}
+				case "wheelchair_boarding": {
+					break;
+				}
+				case "level_id": {
+					break;
+				}
+				case "platform_code": {
+					break;
+				}
+				default:
+					throw new IllegalArgumentException("Unexpected value: " + column);
+				}
+			}
 
 			// add to list
 			stops.add(stop);
 		}
-		
+
 		Comparator<Stop> locationComparator = new Comparator<Stop>() {
-		    @Override
-		    public int compare(Stop location1, Stop location2) {
-		        int latComparison = Double.compare(location1.getStopLat(), location2.getStopLat());
-		        if (latComparison != 0) {
-		            return latComparison;
-		        }
-		        return Double.compare(location1.getStopLon(), location2.getStopLon());
-		    }
+			@Override
+			public int compare(Stop location1, Stop location2) {
+				int latComparison = Double.compare(location1.getStopLat(), location2.getStopLat());
+				if (latComparison != 0) {
+					return latComparison;
+				}
+				return Double.compare(location1.getStopLon(), location2.getStopLon());
+			}
 		};
-		
-		
+
 		Collections.sort(stops, locationComparator);
 
 		// add to db

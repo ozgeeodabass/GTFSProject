@@ -53,6 +53,7 @@ public class Trip {
 	private List<StopTime> stopTimes; 
 	
 	@ManyToOne
+	@JsonIgnore
 	@JoinColumn(name = "bus_id")
 	private Bus bus;
 	

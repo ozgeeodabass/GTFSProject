@@ -63,16 +63,74 @@ public class RouteManager implements RouteService {
 			dataWithoutFirstLine.add(lines.get(i));
 		}
 
+		// get columns names
+		String columns = lines.get(0);
+		List<String> columnNames = new ArrayList<String>();
+
+		for (String col : columns.split(",")) {
+			columnNames.add(col);
+		}
+
 		// process txt data
 		List<Route> routes = new ArrayList<Route>();
+
 		for (String line : dataWithoutFirstLine) {
 			Route route = new Route();
 
 			String[] fields = line.split(",");
-			route.setRouteId(Integer.valueOf(fields[0]));
-			route.setRouteShortName(fields[1]);
-			route.setRouteLongName(fields[2]);
-			route.setRouteType(fields[3]);
+
+			
+			for (String column : columnNames) {
+				switch (column) {
+				case "route_id": {
+					int indexOfCol = columnNames.indexOf(column);
+					String data = fields[indexOfCol];
+					route.setRouteId(Integer.valueOf(data));
+					break;
+				}
+				case "route_short_name": {
+					int indexOfCol = columnNames.indexOf(column);
+					String data = fields[indexOfCol];
+					route.setRouteShortName(data);
+					break;
+				}
+				case "route_long_name": {
+					int indexOfCol = columnNames.indexOf(column);
+					String data = fields[indexOfCol];
+					route.setRouteLongName(data);
+					break;
+				}
+				case "route_type": {
+					int indexOfCol = columnNames.indexOf(column);
+					String data = fields[indexOfCol];
+					route.setRouteType(data);
+					break;
+				}
+				case "route_desc": {
+					break;
+				}
+				case "route_url": {
+					break;
+				}
+				case "route_color": {
+					break;
+				}
+				case "route_text_color": {
+					break;
+				}
+				case "route_sort_order": {
+					break;
+				}
+				case "continuous_pickup": {
+					break;
+				}
+				case "continuous_drop_off": {
+					break;
+				}
+				default:
+					throw new IllegalArgumentException("Unexpected value: " + column);
+				}
+			}
 
 			// add to list
 			routes.add(route);
