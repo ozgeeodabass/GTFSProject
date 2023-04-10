@@ -65,16 +65,20 @@ public class AgencyManager implements AgencyService {
 
 		String columns = lines.get(0);
 		List<String> columnNames = new ArrayList<String>();
+		String regexForColumns = "([(a-z_)]+),";
 
 		for (String col : columns.split(",")) {
 			columnNames.add(col);
 		}
 
 		List<Agency> agencies = new ArrayList<Agency>();
+		
 
 		for (String line : dataWithoutColumnNames) {
 			Agency agency = new Agency();
 			String[] fields = line.split(",");
+			
+			
 
 			for (String column : columnNames) {
 				switch (column) {
