@@ -55,5 +55,8 @@ public class StopTime {
 	@Column(name="timepoint")
 	private int timePoint; //0 or 1
 	
+	
+	
+	
 
 }

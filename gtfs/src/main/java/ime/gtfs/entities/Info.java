@@ -4,47 +4,69 @@ import java.util.List;
 
 public class Info {
 
-	private Agency agency;
-	private Bus bus;
-	private Trip nearestTrip;
+	private String agencyName;
+	private String routeShortName;
+	private String routeLongName;
+	private int nearestTripId;
 	private List<StopTime> stopTimesOfNearestTrip;
 	private String remainingTime;
+	private int busId;
 	
-	public Info(Agency agency, Bus bus, Trip nearestTrip, List<StopTime> stopTimesOfNearestTrip,String remainingTime) {
+	public Info(String agencyName, String routeShortName, String routeLongName, int nearestTripId,
+			List<StopTime> stopTimesOfNearestTrip, String remainingTime,int busId) {
 		super();
-		this.agency = agency;
-		this.bus = bus;
-		this.nearestTrip = nearestTrip;
+		this.agencyName = agencyName;
+		this.routeShortName = routeShortName;
+		this.routeLongName = routeLongName;
+		this.nearestTripId = nearestTripId;
 		this.stopTimesOfNearestTrip = stopTimesOfNearestTrip;
 		this.remainingTime = remainingTime;
+		this.busId = busId;
 	}
-	
+
 	public Info() {
 		super();
 	}
 
-	public Agency getAgency() {
-		return agency;
+
+	public int getBusId() {
+		return busId;
 	}
 
-	public void setAgency(Agency agency) {
-		this.agency = agency;
+	public void setBusId(int busId) {
+		this.busId = busId;
 	}
 
-	public Bus getBus() {
-		return bus;
+	public String getAgencyName() {
+		return agencyName;
 	}
 
-	public void setBus(Bus bus) {
-		this.bus = bus;
+	public void setAgencyName(String agencyName) {
+		this.agencyName = agencyName;
 	}
 
-	public Trip getNearestTrip() {
-		return nearestTrip;
+	public String getRouteShortName() {
+		return routeShortName;
 	}
 
-	public void setNearestTrip(Trip nearestTrip) {
-		this.nearestTrip = nearestTrip;
+	public void setRouteShortName(String routeShortName) {
+		this.routeShortName = routeShortName;
+	}
+
+	public String getRouteLongName() {
+		return routeLongName;
+	}
+
+	public void setRouteLongName(String routeLongName) {
+		this.routeLongName = routeLongName;
+	}
+
+	public int getNearestTripId() {
+		return nearestTripId;
+	}
+
+	public void setNearestTripId(int nearestTripId) {
+		this.nearestTripId = nearestTripId;
 	}
 
 	public List<StopTime> getStopTimesOfNearestTrip() {
@@ -61,6 +83,10 @@ public class Info {
 
 	public void setRemainingTime(String remainingTime) {
 		this.remainingTime = remainingTime;
+	}
+	
+	public String toString() {
+		return this.agencyName+" "+"bus id"+" "+this.busId+this.routeShortName+" "+this.routeLongName+" "+ "{"+"nearest trip id"+" "+ this.nearestTripId+ "}"+"{"+"stop times"+ this.stopTimesOfNearestTrip.toString()+"}"+" "+"remaining time"+ " "+this.remainingTime;
 	}
 	
 	

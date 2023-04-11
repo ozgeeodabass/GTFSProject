@@ -43,5 +43,9 @@ public class Agency {
 	@JsonIgnore
 	private List<Bus> buses;
 	
+	public String toString() {
+		return  "agency_id: "+ this.agencyId +","+"agency_name:" + this.agencyName +","+ "agency_url: " + this.agencyUrl+ ","+"agency_timezone: " + this.agencyTimezone;
+	}
+	
 	
 }

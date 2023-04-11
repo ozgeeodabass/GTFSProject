@@ -1,0 +1,1 @@
+{"bus":[1],"stop times":["[ime.gtfs.entities.StopTime@151ecc88, ime.gtfs.entities.StopTime@6fdd53db]"],"route":["128 Egekent-Egekent2"],"agency":["Eshot"],"nearest trip id":[3],"remaining time":["3 saat 9 dakika"]}
