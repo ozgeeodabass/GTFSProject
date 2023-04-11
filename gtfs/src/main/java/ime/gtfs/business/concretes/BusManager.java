@@ -164,16 +164,15 @@ public class BusManager implements BusService {
 		StopTime stopTimeOfNearestTrip = new StopTime();
 
 		List<StopTime> stopTimesOfNearestTrip = new ArrayList<StopTime>();
-		
-		
+
 		// trip bulunmadığı zaman sorun çıkarabilir
-		int index=-1;
+		int index = -1;
 
 		for (StopTime stopTime : stopTimes) {
 			if (stopTime.getDepartureTime().isAfter(currentTime)) {
 				Duration timeDifference = Duration.between(currentTime, stopTime.getDepartureTime());
 				timeDifferences.add(timeDifference);
-				
+
 				index = stopTimes.indexOf(stopTime);
 
 			}
@@ -184,16 +183,17 @@ public class BusManager implements BusService {
 		if (!timeDifferences.isEmpty()) {
 			minDiff = Collections.min(timeDifferences).toMinutes();
 
-		}
+			int tripId = stopTimes.get(index).getTrip().getTripId();
 
-		
-		int tripId = stopTimes.get(index).getTrip().getTripId();
+			for (StopTime stopTime : stopTimes) {
+				if (stopTime.getTrip().getTripId() == tripId && stopTime.getDepartureTime().isAfter(currentTime)) {
+					stopTimesOfNearestTrip.add(stopTime);
+				}
 
-		for (StopTime stopTime : stopTimes) {
-			if (stopTime.getTrip().getTripId() == tripId && stopTime.getDepartureTime().isAfter(currentTime)) {
-				stopTimesOfNearestTrip.add(stopTime);
 			}
 
+		} else if (timeDifferences.isEmpty()) {
+			stopTimeOfNearestTrip = null;
 		}
 
 		System.out.println("OTOBÜS BİLGİLERİ: " + bus.getBusId());
@@ -250,24 +250,21 @@ public class BusManager implements BusService {
 			default:
 				throw new IllegalArgumentException("Unexpected value: " + Integer.valueOf(String.valueOf(minDiff)));
 			}
-			
 
 		}
-		
+
 		/*
 		 * infos.setAgency(bus.getAgency()); infos.setBus(bus);
 		 * infos.setNearestTrip(nearestTrip);
 		 * infos.setStopTimesOfNearestTrip(stopTimesOfNearestTrip);
 		 */
-		
-		
+
 		infos.setAgencyName(bus.getAgency().getAgencyName());
 		infos.setRouteShortName(bus.getRoute().getRouteShortName());
 		infos.setRouteLongName(bus.getRoute().getRouteLongName());
 		infos.setNearestTripId(nearestTrip.getTripId());
 		infos.setStopTimesOfNearestTrip(stopTimesOfNearestTrip);
 		infos.setBusId(bus.getBusId());
-		
 
 		writeToTheTxt(infos);
 
@@ -285,8 +282,8 @@ public class BusManager implements BusService {
 		jsonObj.append("bus", info.getBusId());
 		jsonObj.append("stop times", info.getStopTimesOfNearestTrip().toString());
 		jsonObj.append("nearest trip id", info.getNearestTripId());
-		jsonObj.append("route", info.getRouteShortName()+" "+ info.getRouteLongName());
-		
+		jsonObj.append("route", info.getRouteShortName() + " " + info.getRouteLongName());
+
 		if (info.getRemainingTime() == null) {
 			info.setRemainingTime("yaklaşan trip yok");
 			jsonObj.append("remaining time", info.getRemainingTime().toString());

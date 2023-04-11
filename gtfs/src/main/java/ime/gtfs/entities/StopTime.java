@@ -56,7 +56,9 @@ public class StopTime {
 	private int timePoint; //0 or 1
 	
 	
-	
+	public String toString() {
+		return "stoptime_id"+":"+this.stopTimeId+","+"arrival_time"+":"+this.arrivalTime+","+"deprture_time"+":"+this.departureTime+","+ "stop_sequence"+":"+this.stopSequence+","+	"timepoint"+":"+this.timePoint+","+"stop"+":"+ this.stop;
+	}
 	
 
 }

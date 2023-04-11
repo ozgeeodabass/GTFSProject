@@ -40,5 +40,9 @@ public class Stop {
 	@JsonIgnore
 	@OneToMany(mappedBy = "stop")
 	List<StopTime> stopTimes;
+	
+	public String toString() {
+		return "stop_id"+":"+this.stopId+","+"stop_name"+":"+this.stopName+","+"stop_lat"+":"+this.stopLat+","+"stop_lon"+":"+this.stopLon;
+	}
 
 }
