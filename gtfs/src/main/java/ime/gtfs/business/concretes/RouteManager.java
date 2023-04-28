@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ime.gtfs.business.abstracts.RouteService;
+import ime.gtfs.dataAccess.abstracts.AgencyRepository;
 import ime.gtfs.dataAccess.abstracts.RouteRepository;
 import ime.gtfs.entities.Route;
 
@@ -17,11 +18,13 @@ import ime.gtfs.entities.Route;
 public class RouteManager implements RouteService {
 
 	private RouteRepository routeRepository;
-
+	private AgencyRepository agencyRepository;
+	
 	@Autowired
-	public RouteManager(RouteRepository routeRepository) {
+	public RouteManager(RouteRepository routeRepository,AgencyRepository agencyRepository) {
 		super();
 		this.routeRepository = routeRepository;
+		this.agencyRepository=agencyRepository;
 	}
 
 	@Override
@@ -35,6 +38,7 @@ public class RouteManager implements RouteService {
 			routeResponseItem.setRouteShortName(route.getRouteShortName());
 			routeResponseItem.setRouteLongName(route.getRouteLongName());
 			routeResponseItem.setRouteType(route.getRouteType());
+			routeResponseItem.setAgencyId(route.getAgencyId());
 
 			routesResponse.add(routeResponseItem);
 		}
@@ -106,6 +110,12 @@ public class RouteManager implements RouteService {
 					route.setRouteType(data);
 					break;
 				}
+				case "agency_id": {
+					int indexOfCol = columnNames.indexOf(column);
+					int data = Integer.valueOf(fields[indexOfCol]);
+					route.setAgencyId(agencyRepository.findById(data).get());
+					break;
+				}
 				case "route_desc": {
 					break;
 				}
@@ -151,6 +161,7 @@ public class RouteManager implements RouteService {
 		router.setRouteShortName(route.getRouteShortName());
 		router.setRouteLongName(route.getRouteLongName());
 		router.setRouteType(route.getRouteType());
+		router.setAgencyId(route.getAgencyId());
 		this.routeRepository.save(router);
 		System.out.println("Eklendi");
 		return router.toString();

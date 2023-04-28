@@ -1,2 +1,5 @@
-agency_id,agency_name,agency_url,agency_timezone,agency_phone,agency_lang
-1,The Fun Bus,http://www.thefunbus.org,America/Los_Angeles,(310) 555-0222,en
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url,agency_email
+57,BELEDİYE,http://www.kocaeli.bel.tr,Europe/Istanbul,tr,,,
+56,BELEDİYE,http://www.kocaeli.bel.tr,Europe/Istanbul,tr,,,
+1,BELEDİYE,http://www.kocaeli.bel.tr,Europe/Istanbul,tr,,,
+6,115 NOLU,http://www.kocaeli.bel.tr,Europe/Istanbul,tr,,,

@@ -7,19 +7,19 @@ public class Info {
 	private String agencyName;
 	private String routeShortName;
 	private String routeLongName;
-	private int nearestTripId;
-	private List<StopTime> stopTimesOfNearestTrip;
+	private Trip nearestTrip;
+	private StopTime nearestStopTime;
 	private String remainingTime;
 	private int busId;
 	
-	public Info(String agencyName, String routeShortName, String routeLongName, int nearestTripId,
-			List<StopTime> stopTimesOfNearestTrip, String remainingTime,int busId) {
+	public Info(String agencyName, String routeShortName, String routeLongName, Trip nearestTrip,
+			StopTime nearestStopTime, String remainingTime,int busId) {
 		super();
 		this.agencyName = agencyName;
 		this.routeShortName = routeShortName;
 		this.routeLongName = routeLongName;
-		this.nearestTripId = nearestTripId;
-		this.stopTimesOfNearestTrip = stopTimesOfNearestTrip;
+		this.nearestTrip = nearestTrip;
+		this.nearestStopTime = nearestStopTime;
 		this.remainingTime = remainingTime;
 		this.busId = busId;
 	}
@@ -61,20 +61,20 @@ public class Info {
 		this.routeLongName = routeLongName;
 	}
 
-	public int getNearestTripId() {
-		return nearestTripId;
+	public Trip getNearestTrip() {
+		return nearestTrip;
 	}
 
-	public void setNearestTripId(int nearestTripId) {
-		this.nearestTripId = nearestTripId;
+	public void setNearestTrip(Trip nearestTrip) {
+		this.nearestTrip = nearestTrip;
 	}
 
-	public List<StopTime> getStopTimesOfNearestTrip() {
-		return stopTimesOfNearestTrip;
+	public StopTime getNearestStopTime() {
+		return nearestStopTime;
 	}
 
-	public void setStopTimesOfNearestTrip(List<StopTime> stopTimesOfNearestTrip) {
-		this.stopTimesOfNearestTrip = stopTimesOfNearestTrip;
+	public void setNearestStopTime(StopTime nearestStopTime) {
+		this.nearestStopTime = nearestStopTime;
 	}
 
 	public String getRemainingTime() {
@@ -86,7 +86,7 @@ public class Info {
 	}
 	
 	public String toString() {
-		return this.agencyName+" "+"bus id"+" "+this.busId+this.routeShortName+" "+this.routeLongName+" "+ "{"+"nearest trip id"+" "+ this.nearestTripId+ "}"+"{"+"stop times"+ this.stopTimesOfNearestTrip.toString()+"}"+" "+"remaining time"+ " "+this.remainingTime;
+		return this.agencyName+" "+"bus id"+" "+this.busId+this.routeShortName+" "+this.routeLongName+" "+ "{"+"nearest trip"+" "+ this.nearestTrip+ "}"+"{"+"stop times"+ this.nearestStopTime.toString()+"}"+" "+"remaining time"+ " "+this.remainingTime;
 	}
 	
 	

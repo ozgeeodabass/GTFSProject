@@ -135,6 +135,7 @@ public class AgencyManager implements AgencyService {
 	@Override
 	public String add(Agency agency) {
 		Agency agencyr = new Agency();
+		agencyr.setAgencyId(agency.getAgencyId());
 		agencyr.setAgencyName(agency.getAgencyName());
 		agencyr.setAgencyUrl(agency.getAgencyUrl());
 		agencyr.setAgencyTimezone(agency.getAgencyTimezone());

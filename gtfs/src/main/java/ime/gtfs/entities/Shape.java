@@ -6,8 +6,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -21,24 +23,38 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "shapes")
+//@IdClass(ShapeId.class)
 public class Shape {
 	
+
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "unique_id")
+	private int UniqueId;
+	
+	
+	@Column(name="shape_id")
 	private int shapeId;
-	
-	@Column(name="shape_pt_lat")
+
+	@Column(name = "shape_pt_lat")
 	private double shapePtLat;
+
 	
-	@Column(name="shape_pt_lon")
+	@Column(name = "shape_pt_lon")
 	private double shapePtLon;
-	
-	@Column(name="shape_pt_sequence")
+
+
 	@Min(0)
+	@Column(name = "shape_pt_sequence")
 	private int shapePtSequence;
 	
-	@OneToMany(mappedBy ="shape")
+	@ManyToMany(mappedBy = "shapes")
 	@JsonIgnore
 	private List<Trip> trips; 
 	
+	
+	public String toString() {
+		return "shape_id"+":"+this.shapeId+","+"shape_pt_lat"+":"+this.shapePtLat+","+"shape_pt_lon"+":"+this.shapePtLon+","+ "shape_pt_sequence"+":"+this.shapePtSequence;
+	}
 	
 }

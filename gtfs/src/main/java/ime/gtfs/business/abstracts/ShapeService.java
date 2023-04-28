@@ -9,5 +9,6 @@ public interface ShapeService {
 	List<Shape> getAll();
 	String readFromTxtPushToDb(String txtName)  throws  FileNotFoundException;
 	String add(Shape shape);
+	//Shape findByShapeId(int id);
 
 }

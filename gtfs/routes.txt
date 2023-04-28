@@ -1,2 +1,10 @@
-route_id,route_short_name,route_long_name,route_desc,route_type
-1,17,Mission,The ""A"" route travels from lower Mission to Downtown,3
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,route_url,route_color,route_text_color
+379,57,V4,GÖLCÜK-YARIMCA,,4,,,
+378,57,V3,İZMİT-DEĞİRMENDERE,,4,,,
+377,57,V2,KARAMÜRSEL-HEREKE,,4,,,
+376,57,V1,İZMİT-KARAMÜRSEL,,4,,,
+389,56,T2,KENT HASTANESİ,,0,,,
+386,56,T3,KÖRFEZ-DERİNCE HAT 1,,0,,,
+387,56,T4,KÖRFEZ-DERİNCE HAT 2,,0,,,
+388,56,T5,YAHYA KAPTAN-KOCAELİ STADI,,0,,,
+373,56,T1,OTOGAR-SEKAPARK,,0,,,

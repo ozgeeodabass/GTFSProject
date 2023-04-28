@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import ime.gtfs.dataAccess.abstracts.RouteRepository;
 import ime.gtfs.dataAccess.abstracts.ShapeRepository;
 import ime.gtfs.dataAccess.abstracts.TripRepository;
 import ime.gtfs.entities.Route;
+import ime.gtfs.entities.Shape;
 import ime.gtfs.entities.Trip;
 
 @Service
@@ -48,10 +50,19 @@ public class TripManager implements TripService {
 			tripResponseItem.setRoute(trip.getRoute());
 			tripResponseItem.setServiceId(trip.getServiceId());
 			tripResponseItem.setWheelchairAccessible(trip.getWheelchairAccessible());
+			tripResponseItem.setShapes(trip.getShapes());
 
+			for (Shape shape : tripResponseItem.getShapes()) {
+				System.out.println(shape.getShapeId()+" "+shape.getShapePtSequence());
+			}
+			
+			
 			tripsResponse.add(tripResponseItem);
+			
+			
 		}
 
+		
 		return tripsResponse;
 	}
 
@@ -103,7 +114,7 @@ public class TripManager implements TripService {
 				case "service_id": {
 					int indexOfCol = columnNames.indexOf(column);
 					String data = fields[indexOfCol];
-					trip.setServiceId(calendarRepository.findById(Integer.valueOf(data)).get());
+					trip.setServiceId(calendarRepository.findById(Integer.valueOf(data)).orElse(null));
 					break;
 				}
 				case "trip_id": {
@@ -121,7 +132,13 @@ public class TripManager implements TripService {
 				case "shape_id": {
 					int indexOfCol = columnNames.indexOf(column);
 					String data = fields[indexOfCol];
-					trip.setShape(shapeRepository.findById(Integer.valueOf(data)).get());
+					//List<Shape> shapes = shapeRepository.findAllByShapeId(Integer.valueOf(data));
+					List<Shape> shapes = shapeRepository.findAllByShapeId(Integer.valueOf(data));
+				
+					trip.setShapes(shapes);
+					
+					
+					
 					break;
 				}
 				case "wheelchair_accessible": {
@@ -134,6 +151,7 @@ public class TripManager implements TripService {
 					int indexOfCol = columnNames.indexOf(column);
 					String data = fields[indexOfCol];
 					trip.setBikesAllowed(Integer.valueOf(data));
+					
 					break;
 				}
 				case "trip_headsign": {
@@ -171,6 +189,7 @@ public class TripManager implements TripService {
 		tripr.setRoute(trip.getRoute());
 		tripr.setServiceId(trip.getServiceId());
 		tripr.setWheelchairAccessible(trip.getWheelchairAccessible());
+		tripr.setShapes(trip.getShapes());
 		this.tripRepository.save(tripr);
 		System.out.println("Eklendi");
 		return tripr.toString();

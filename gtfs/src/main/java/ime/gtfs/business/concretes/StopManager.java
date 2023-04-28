@@ -98,13 +98,18 @@ public class StopManager implements StopService {
 				case "stop_lat": {
 					int indexOfCol = columnNames.indexOf(column);
 					String data = fields[indexOfCol];
-					stop.setStopLat(Double.parseDouble(data));
+					if(!data.isEmpty()) {
+						stop.setStopLat(Double.parseDouble(data));
+					}
+					
 					break;
 				}
 				case "stop_lon": {
 					int indexOfCol = columnNames.indexOf(column);
 					String data = fields[indexOfCol];
-					stop.setStopLon(Double.parseDouble(data));
+					if(!data.isEmpty()) {
+						stop.setStopLon(Double.parseDouble(data));
+					}
 					break;
 				}
 				case "stop_code": {

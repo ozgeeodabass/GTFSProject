@@ -2,6 +2,9 @@ package ime.gtfs.entities;
 
 import java.util.List;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -27,7 +30,6 @@ public class Agency {
 
 	@Id
 	@PrimaryKeyJoinColumn
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int agencyId;
 	
 	@Column(name = "agency_name")
@@ -42,6 +44,10 @@ public class Agency {
 	@OneToMany(mappedBy = "agency")
 	@JsonIgnore
 	private List<Bus> buses;
+	
+	@OneToMany(mappedBy = "agencyId")
+	@JsonIgnore
+	private List<Route> route;
 	
 	public String toString() {
 		return  "agency_id: "+ this.agencyId +","+"agency_name:" + this.agencyName +","+ "agency_url: " + this.agencyUrl+ ","+"agency_timezone: " + this.agencyTimezone;
