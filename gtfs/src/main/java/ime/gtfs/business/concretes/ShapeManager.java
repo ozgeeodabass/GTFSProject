@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ime.gtfs.business.abstracts.ShapeService;
+import ime.gtfs.core.utilities.results.DataResult;
+import ime.gtfs.core.utilities.results.Result;
+import ime.gtfs.core.utilities.results.SuccessDataResult;
+import ime.gtfs.core.utilities.results.SuccessResult;
 import ime.gtfs.dataAccess.abstracts.ShapeRepository;
 import ime.gtfs.entities.Shape;
 
@@ -25,25 +29,25 @@ public class ShapeManager implements ShapeService {
 	}
 
 	@Override
-	public List<Shape> getAll() {
-		List<Shape> shapes = shapeRepository.findAll();
-		List<Shape> shapesResponses = new ArrayList<Shape>();
+	public DataResult<List<Shape>> getAll() {
+		/*
+		 * List<Shape> shapes = shapeRepository.findAll(); List<Shape> shapesResponses =
+		 * new ArrayList<Shape>();
+		 * 
+		 * for (Shape shape : shapes) { Shape shapeResponseItem = new Shape();
+		 * shapeResponseItem.setShapeId(shape.getShapeId());
+		 * shapeResponseItem.setShapePtLat(shape.getShapePtLat());
+		 * shapeResponseItem.setShapePtLon(shape.getShapePtLon());
+		 * shapeResponseItem.setShapePtSequence(shape.getShapePtSequence());
+		 * 
+		 * shapesResponses.add(shapeResponseItem); }
+		 */
 
-		for (Shape shape : shapes) {
-			Shape shapeResponseItem = new Shape();
-			shapeResponseItem.setShapeId(shape.getShapeId());
-			shapeResponseItem.setShapePtLat(shape.getShapePtLat());
-			shapeResponseItem.setShapePtLon(shape.getShapePtLon());
-			shapeResponseItem.setShapePtSequence(shape.getShapePtSequence());
-
-			shapesResponses.add(shapeResponseItem);
-		}
-
-		return shapesResponses;
+		return new SuccessDataResult<List<Shape>>(this.shapeRepository.findAll(),"all shapes returned");
 	}
 
 	@Override
-	public String readFromTxtPushToDb(String txtName) throws FileNotFoundException {
+	public Result readFromTxtPushToDb(String txtName) throws FileNotFoundException {
 		File file = new File(txtName);
 		List<String> lines = new ArrayList<String>();
 
@@ -123,11 +127,11 @@ public class ShapeManager implements ShapeService {
 			this.add(shape);
 
 		}
-		return "Veritabanına kaydedildi";
+		return new SuccessResult("Veritabanına Kaydedildi");
 	}
 
 	@Override
-	public String add(Shape shape) {
+	public Result add(Shape shape) {
 		Shape shaper = new Shape();
 		shaper.setShapeId(shape.getShapeId());
 		shaper.setShapePtLat(shape.getShapePtLat());
@@ -135,7 +139,7 @@ public class ShapeManager implements ShapeService {
 		shaper.setShapePtSequence(shape.getShapePtSequence());
 		this.shapeRepository.save(shaper);
 		System.out.println("Eklendi");
-		return shaper.toString();
+		return new SuccessResult(shaper.toString()+" eklendi");
 	}
 
 }

@@ -4,13 +4,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import ime.gtfs.business.abstracts.TripService;
+import ime.gtfs.core.utilities.results.DataResult;
+import ime.gtfs.core.utilities.results.Result;
+import ime.gtfs.core.utilities.results.SuccessDataResult;
+import ime.gtfs.core.utilities.results.SuccessResult;
 import ime.gtfs.dataAccess.abstracts.CalendarRepository;
 import ime.gtfs.dataAccess.abstracts.RouteRepository;
 import ime.gtfs.dataAccess.abstracts.ShapeRepository;
@@ -38,36 +39,36 @@ public class TripManager implements TripService {
 	}
 
 	@Override
-	public List<Trip> getAll() {
-		List<Trip> trips = tripRepository.findAll();
-		List<Trip> tripsResponse = new ArrayList<Trip>();
-
-		for (Trip trip : trips) {
-			Trip tripResponseItem = new Trip();
-			tripResponseItem.setTripId(trip.getTripId());
-			tripResponseItem.setDirectionId(trip.getDirectionId());
-			tripResponseItem.setBikesAllowed(trip.getBikesAllowed());
-			tripResponseItem.setRoute(trip.getRoute());
-			tripResponseItem.setServiceId(trip.getServiceId());
-			tripResponseItem.setWheelchairAccessible(trip.getWheelchairAccessible());
-			tripResponseItem.setShapes(trip.getShapes());
-
-			for (Shape shape : tripResponseItem.getShapes()) {
-				System.out.println(shape.getShapeId()+" "+shape.getShapePtSequence());
-			}
+	public DataResult<List<Trip>> getAll() {
+		/*
+		 * List<Trip> trips = tripRepository.findAll(); List<Trip> tripsResponse = new
+		 * ArrayList<Trip>();
+		 * 
+		 * for (Trip trip : trips) { Trip tripResponseItem = new Trip();
+		 * tripResponseItem.setTripId(trip.getTripId());
+		 * tripResponseItem.setDirectionId(trip.getDirectionId());
+		 * tripResponseItem.setBikesAllowed(trip.getBikesAllowed());
+		 * tripResponseItem.setRoute(trip.getRoute());
+		 * tripResponseItem.setServiceId(trip.getServiceId());
+		 * tripResponseItem.setWheelchairAccessible(trip.getWheelchairAccessible());
+		 * tripResponseItem.setShapes(trip.getShapes());
+		 * 
+		 * for (Shape shape : tripResponseItem.getShapes()) {
+		 * System.out.println(shape.getShapeId()+" "+shape.getShapePtSequence()); }
+		 * 
+		 * 
+		 * tripsResponse.add(tripResponseItem);
+		 */
 			
-			
-			tripsResponse.add(tripResponseItem);
-			
-			
+			return new SuccessDataResult<List<Trip>>(this.tripRepository.findAll());
 		}
 
 		
-		return tripsResponse;
-	}
+	
+	
 
 	@Override
-	public String readFromTxtPushToDb(String txtName) throws FileNotFoundException {
+	public Result readFromTxtPushToDb(String txtName) throws FileNotFoundException {
 		File file = new File(txtName);
 		List<String> lines = new ArrayList<String>();
 
@@ -177,11 +178,11 @@ public class TripManager implements TripService {
 			this.add(trip);
 
 		}
-		return "Veritabanına kaydedildi.";
+		return new SuccessResult("Veritabanına kaydedildi");
 	}
 
 	@Override
-	public String add(Trip trip) {
+	public Result add(Trip trip) {
 		Trip tripr = new Trip();
 		tripr.setTripId(trip.getTripId());
 		tripr.setBikesAllowed(trip.getBikesAllowed());
@@ -192,13 +193,12 @@ public class TripManager implements TripService {
 		tripr.setShapes(trip.getShapes());
 		this.tripRepository.save(tripr);
 		System.out.println("Eklendi");
-		return tripr.toString();
+		return new SuccessResult(tripr.toString()+" eklendi");
 	}
 
 	@Override
-	public List<Trip> findAllByRoute(Route route) {
-		List<Trip> trips = this.tripRepository.findAllByRoute(route);
-		return trips;
+	public DataResult<List<Trip>> findAllByRoute(Route route) {
+		return new SuccessDataResult<List<Trip>>(this.tripRepository.findAllByRoute(route));
 	}
 
 }

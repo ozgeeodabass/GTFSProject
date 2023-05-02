@@ -10,6 +10,10 @@ import java.util.Scanner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ime.gtfs.business.abstracts.CalendarService;
+import ime.gtfs.core.utilities.results.DataResult;
+import ime.gtfs.core.utilities.results.Result;
+import ime.gtfs.core.utilities.results.SuccessDataResult;
+import ime.gtfs.core.utilities.results.SuccessResult;
 import ime.gtfs.dataAccess.abstracts.CalendarRepository;
 import ime.gtfs.entities.Calendar;
 
@@ -25,31 +29,30 @@ public class CalendarManager implements CalendarService {
 	}
 
 	@Override
-	public List<Calendar> getAll() {
-		List<Calendar> calendars = calendarRepository.findAll();
-		List<Calendar> calendarsResponse = new ArrayList<Calendar>();
-
-		for (Calendar calendar : calendars) {
-			Calendar calendarResponseItem = new Calendar();
-			calendarResponseItem.setServiceId(calendar.getServiceId());
-			calendarResponseItem.setStartDate(calendar.getStartDate());
-			calendarResponseItem.setEndDate(calendar.getEndDate());
-			calendarResponseItem.setMonday(calendar.getMonday());
-			calendarResponseItem.setFriday(calendar.getFriday());
-			calendarResponseItem.setSaturday(calendar.getSaturday());
-			calendarResponseItem.setSunday(calendar.getSunday());
-			calendarResponseItem.setThursday(calendar.getThursday());
-			calendarResponseItem.setTuesday(calendar.getTuesday());
-			calendarResponseItem.setWednesday(calendar.getWednesday());
-
-			calendarsResponse.add(calendarResponseItem);
-		}
-
-		return calendarsResponse;
+	public DataResult<List<Calendar>> getAll() {
+		/*
+		 * List<Calendar> calendars = calendarRepository.findAll(); List<Calendar>
+		 * calendarsResponse = new ArrayList<Calendar>();
+		 * 
+		 * for (Calendar calendar : calendars) { Calendar calendarResponseItem = new
+		 * Calendar(); calendarResponseItem.setServiceId(calendar.getServiceId());
+		 * calendarResponseItem.setStartDate(calendar.getStartDate());
+		 * calendarResponseItem.setEndDate(calendar.getEndDate());
+		 * calendarResponseItem.setMonday(calendar.getMonday());
+		 * calendarResponseItem.setFriday(calendar.getFriday());
+		 * calendarResponseItem.setSaturday(calendar.getSaturday());
+		 * calendarResponseItem.setSunday(calendar.getSunday());
+		 * calendarResponseItem.setThursday(calendar.getThursday());
+		 * calendarResponseItem.setTuesday(calendar.getTuesday());
+		 * calendarResponseItem.setWednesday(calendar.getWednesday());
+		 * 
+		 * calendarsResponse.add(calendarResponseItem); }
+		 */
+		return new SuccessDataResult<List<Calendar>>(this.calendarRepository.findAll(),"calendars returned");
 	}
 
 	@Override
-	public String readFromTxtPushToDb(String txtName) throws FileNotFoundException {
+	public Result readFromTxtPushToDb(String txtName) throws FileNotFoundException {
 		File file = new File(txtName);
 		List<String> lines = new ArrayList<String>();
 
@@ -164,11 +167,11 @@ public class CalendarManager implements CalendarService {
 			System.out.println(calendar.getServiceId() + " kaydedildi");
 		}
 
-		return "Veritabanına kaydedildi.";
+		return new SuccessResult("Veritabanına kaydedildi");
 	}
 
 	@Override
-	public String add(Calendar calendar) {
+	public Result add(Calendar calendar) {
 		Calendar calendarr = new Calendar();
 		calendarr.setServiceId(calendar.getServiceId());
 		calendarr.setMonday(calendar.getMonday());
@@ -183,7 +186,7 @@ public class CalendarManager implements CalendarService {
 
 		this.calendarRepository.save(calendarr);
 		System.out.println("Eklendi");
-		return calendarr.toString();
+		return new SuccessResult(calendarr.toString()+ " eklendi");
 	}
 
 }

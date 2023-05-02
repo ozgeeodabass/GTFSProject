@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ime.gtfs.business.abstracts.TripService;
+import ime.gtfs.core.utilities.results.DataResult;
+import ime.gtfs.core.utilities.results.Result;
 import ime.gtfs.entities.Trip;
 
 @RestController
@@ -27,18 +29,18 @@ public class TripsController {
 	}
 
 	@GetMapping("/getallTrip")
-	public List<Trip> getAll() {
+	public DataResult<List<Trip>> getAll() {
 		return this.tripService.getAll();
 	}
 
 	@PostMapping("/addTrip")
-	public String add(Trip trip) {
+	public Result add(Trip trip) {
 		return this.tripService.add(trip);
 	}
 
 	@PostMapping("/readfromtxtpushtodbTrip/{textName}")
 	@ResponseBody
-	public String readFromTxtPushToDb(@PathVariable(value = "textName") String textName) throws FileNotFoundException {
+	public Result readFromTxtPushToDb(@PathVariable(value = "textName") String textName) throws FileNotFoundException {
 		return this.tripService.readFromTxtPushToDb(textName);
 	}
 

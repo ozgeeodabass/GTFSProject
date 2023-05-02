@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ime.gtfs.business.abstracts.RouteService;
+import ime.gtfs.core.utilities.results.DataResult;
+import ime.gtfs.core.utilities.results.Result;
+import ime.gtfs.core.utilities.results.SuccessDataResult;
+import ime.gtfs.core.utilities.results.SuccessResult;
 import ime.gtfs.dataAccess.abstracts.AgencyRepository;
 import ime.gtfs.dataAccess.abstracts.RouteRepository;
 import ime.gtfs.entities.Route;
@@ -28,26 +32,26 @@ public class RouteManager implements RouteService {
 	}
 
 	@Override
-	public List<Route> getAll() {
-		List<Route> routes = routeRepository.findAll();
-		List<Route> routesResponse = new ArrayList<Route>();
+	public DataResult<List<Route>> getAll() {
+		/*
+		 * List<Route> routes = routeRepository.findAll(); List<Route> routesResponse =
+		 * new ArrayList<Route>();
+		 * 
+		 * for (Route route : routes) { Route routeResponseItem = new Route();
+		 * routeResponseItem.setRouteId(route.getRouteId());
+		 * routeResponseItem.setRouteShortName(route.getRouteShortName());
+		 * routeResponseItem.setRouteLongName(route.getRouteLongName());
+		 * routeResponseItem.setRouteType(route.getRouteType());
+		 * routeResponseItem.setAgencyId(route.getAgencyId());
+		 * 
+		 * routesResponse.add(routeResponseItem); }
+		 */
 
-		for (Route route : routes) {
-			Route routeResponseItem = new Route();
-			routeResponseItem.setRouteId(route.getRouteId());
-			routeResponseItem.setRouteShortName(route.getRouteShortName());
-			routeResponseItem.setRouteLongName(route.getRouteLongName());
-			routeResponseItem.setRouteType(route.getRouteType());
-			routeResponseItem.setAgencyId(route.getAgencyId());
-
-			routesResponse.add(routeResponseItem);
-		}
-
-		return routesResponse;
+		return new SuccessDataResult<List<Route>>(this.routeRepository.findAll(),"all routes returned");
 	}
 
 	@Override
-	public String readFromTxtPushToDb(String txtName) throws FileNotFoundException {
+	public Result readFromTxtPushToDb(String txtName) throws FileNotFoundException {
 		File file = new File(txtName);
 		List<String> lines = new ArrayList<String>();
 
@@ -151,11 +155,11 @@ public class RouteManager implements RouteService {
 			this.add(route);
 
 		}
-		return "Veritabanına kaydedildi.";
+		return new SuccessResult("Veritabanına eklendi");
 	}
 
 	@Override
-	public String add(Route route) {
+	public Result add(Route route) {
 		Route router = new Route();
 		router.setRouteId(route.getRouteId());
 		router.setRouteShortName(route.getRouteShortName());
@@ -164,7 +168,7 @@ public class RouteManager implements RouteService {
 		router.setAgencyId(route.getAgencyId());
 		this.routeRepository.save(router);
 		System.out.println("Eklendi");
-		return router.toString();
+		return new SuccessResult(router.toString()+" eklendi");
 	}
 
 }

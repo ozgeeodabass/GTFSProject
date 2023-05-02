@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
@@ -17,6 +18,10 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import ime.gtfs.business.abstracts.BusService;
+import ime.gtfs.core.utilities.results.DataResult;
+import ime.gtfs.core.utilities.results.Result;
+import ime.gtfs.core.utilities.results.SuccessDataResult;
+import ime.gtfs.core.utilities.results.SuccessResult;
 import ime.gtfs.dataAccess.abstracts.BusRepository;
 import ime.gtfs.dataAccess.abstracts.StopTimeRepository;
 import ime.gtfs.dataAccess.abstracts.TripRepository;
@@ -42,35 +47,35 @@ public class BusManager implements BusService {
 	}
 
 	@Override
-	public List<Bus> getAll() {
-		List<Bus> buses = busRepository.findAll();
-		List<Bus> busesResponse = new ArrayList<Bus>();
-
-		for (Bus bus : buses) {
-			Bus busResponseItem = new Bus();
-			busResponseItem.setBusId(bus.getBusId());
-			busResponseItem.setRoute(bus.getRoute());
-
-			busesResponse.add(busResponseItem);
-		}
-
-		return busesResponse;
+	public DataResult<List<Bus>> getAll() {
+		/*
+		 * List<Bus> buses = busRepository.findAll(); List<Bus> busesResponse = new
+		 * ArrayList<Bus>();
+		 * 
+		 * for (Bus bus : buses) { Bus busResponseItem = new Bus();
+		 * busResponseItem.setBusId(bus.getBusId());
+		 * busResponseItem.setRoute(bus.getRoute());
+		 * 
+		 * busesResponse.add(busResponseItem); }
+		 */
+		
+		return new SuccessDataResult<List<Bus>>(this.busRepository.findAll(), "all buses returned");
 	}
 
 	@Override
-	public String add(Bus bus) {
+	public Result add(Bus bus) {
 		Bus busr = new Bus();
 		busr.setBusId(bus.getBusId());
 		busr.setRoute(bus.getRoute());
 		busr.setAgency(bus.getAgency());
 		this.busRepository.save(busr);
 		System.out.println("Eklendi");
-		return busr.toString();
+		return new SuccessResult(busr.toString()+" eklendi");
 	}
 
 	
 	
-	public Info startBus(int busId) throws IOException {
+	public DataResult<Info> startBus(int busId) throws IOException {
 
 		Bus bus = busRepository.findById(busId).get();	
 		
@@ -108,6 +113,7 @@ public class BusManager implements BusService {
 		List<StopTime> stopTimesOfNearestTrip = new ArrayList<StopTime>();
 		
 		List<Integer> stopTimeIds = new ArrayList<Integer>();
+		
 		// trip bulunmadığı zaman sorun çıkarabilir
 		int index = -1;
 
@@ -216,15 +222,22 @@ public class BusManager implements BusService {
 		infos.setAgencyName(bus.getAgency().getAgencyName());
 		infos.setRouteShortName(bus.getRoute().getRouteShortName());
 		infos.setRouteLongName(bus.getRoute().getRouteLongName());
-		infos.setNearestTrip(nearestTrip);
-		infos.setNearestStopTime(stopTimeOfNearestTrip);
+		
+		if(!Objects.isNull(nearestTrip)) {
+			infos.setNearestTrip(nearestTrip);
+			infos.setNearestStopTime(stopTimeOfNearestTrip);
+		}else if(Objects.isNull(nearestTrip)){
+			infos.setNearestTrip(null);
+			infos.setNearestStopTime(null);
+		}
+		
 		infos.setBusId(bus.getBusId());
 
 		writeToTheTxt(infos);
 		//System.out.println(tripsOfRoute.get(0).getShapes());
 
 		
-		return infos;
+		return new SuccessDataResult<Info>(infos);
 
 	}
 

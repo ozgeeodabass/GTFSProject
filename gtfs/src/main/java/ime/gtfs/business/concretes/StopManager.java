@@ -12,6 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ime.gtfs.business.abstracts.StopService;
+import ime.gtfs.core.utilities.results.DataResult;
+import ime.gtfs.core.utilities.results.Result;
+import ime.gtfs.core.utilities.results.SuccessDataResult;
+import ime.gtfs.core.utilities.results.SuccessResult;
 import ime.gtfs.dataAccess.abstracts.StopRepository;
 import ime.gtfs.entities.Stop;
 
@@ -27,8 +31,8 @@ public class StopManager implements StopService {
 	}
 
 	@Override
-	public List<Stop> getAll() {
-		List<Stop> stops = stopRepository.findAll();
+	public DataResult<List<Stop>> getAll() {
+		/*List<Stop> stops = stopRepository.findAll();
 		List<Stop> stopsResponse = new ArrayList<Stop>();
 
 		for (Stop stop : stops) {
@@ -39,13 +43,13 @@ public class StopManager implements StopService {
 			stopResponseItem.setStopName(stop.getStopName());
 
 			stopsResponse.add(stopResponseItem);
-		}
+		}*/
 
-		return stopsResponse;
+		return new SuccessDataResult<List<Stop>>(this.stopRepository.findAll(),"all stops returned");
 	}
 
 	@Override
-	public String readFromTxtPushToDb(String txtName) throws FileNotFoundException {
+	public Result readFromTxtPushToDb(String txtName) throws FileNotFoundException {
 		File file = new File(txtName);
 		List<String> lines = new ArrayList<String>();
 
@@ -169,11 +173,11 @@ public class StopManager implements StopService {
 			this.add(stop);
 
 		}
-		return "Veritabanına kaydedildi.";
+		return new SuccessResult("Veritabanına Kaydedildi");
 	}
 
 	@Override
-	public String add(Stop stop) {
+	public Result add(Stop stop) {
 		Stop stopr = new Stop();
 		stopr.setStopId(stop.getStopId());
 		stopr.setStopLat(stop.getStopLat());
@@ -181,12 +185,13 @@ public class StopManager implements StopService {
 		stopr.setStopName(stop.getStopName());
 		this.stopRepository.save(stopr);
 		System.out.println("Eklendi");
-		return stopr.toString();
+		return new SuccessResult(stopr.toString()+" eklendi");
 	}
 
 	@Override
-	public Stop getByStopId(int id) {
-		return this.stopRepository.findById(id).get();
+	public DataResult<Stop> getByStopId(int id) {
+		return new SuccessDataResult<Stop>(this.stopRepository.findById(id).get());
+				
 	}
 
 }

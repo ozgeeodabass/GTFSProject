@@ -7,12 +7,13 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import ime.gtfs.business.abstracts.StopTimeService;
-import ime.gtfs.dataAccess.abstracts.RouteRepository;
+import ime.gtfs.core.utilities.results.DataResult;
+import ime.gtfs.core.utilities.results.Result;
+import ime.gtfs.core.utilities.results.SuccessDataResult;
+import ime.gtfs.core.utilities.results.SuccessResult;
 import ime.gtfs.dataAccess.abstracts.StopRepository;
 import ime.gtfs.dataAccess.abstracts.StopTimeRepository;
 import ime.gtfs.dataAccess.abstracts.TripRepository;
@@ -25,41 +26,39 @@ public class StopTimeManager implements StopTimeService {
 	private StopTimeRepository stopTimeRepository;
 	private StopRepository stopRepository;
 	private TripRepository tripRepository;
-	private RouteRepository routeRepository;
 
 	@Autowired
 	public StopTimeManager(StopTimeRepository stopTimeRepository, StopRepository stopRepository,
-			TripRepository tripRepository, RouteRepository routeRepository) {
+			TripRepository tripRepository) {
 		super();
 		this.stopTimeRepository = stopTimeRepository;
 		this.stopRepository = stopRepository;
 		this.tripRepository = tripRepository;
-		this.routeRepository = routeRepository;
 	}
 
 	@Override
-	public List<StopTime> getAll() {
-		List<StopTime> stopTimes = stopTimeRepository.findAll();
-		List<StopTime> stopTimesResponse = new ArrayList<StopTime>();
+	public DataResult<List<StopTime>> getAll() {
+		/*
+		 * List<StopTime> stopTimes = stopTimeRepository.findAll(); List<StopTime>
+		 * stopTimesResponse = new ArrayList<StopTime>();
+		 * 
+		 * for (StopTime stopTime : stopTimes) { StopTime stopTimeResponseItem = new
+		 * StopTime(); stopTimeResponseItem.setStopTimeId(stopTime.getStopTimeId());
+		 * stopTimeResponseItem.setStop(stopTime.getStop());
+		 * stopTimeResponseItem.setTrip(stopTime.getTrip());
+		 * stopTimeResponseItem.setArrivalTime(stopTime.getArrivalTime());
+		 * stopTimeResponseItem.setDepartureTime(stopTime.getDepartureTime());
+		 * stopTimeResponseItem.setStopSequence(stopTime.getStopSequence());
+		 * stopTimeResponseItem.setTimePoint(stopTime.getTimePoint());
+		 * 
+		 * stopTimesResponse.add(stopTimeResponseItem); }
+		 */
 
-		for (StopTime stopTime : stopTimes) {
-			StopTime stopTimeResponseItem = new StopTime();
-			stopTimeResponseItem.setStopTimeId(stopTime.getStopTimeId());
-			stopTimeResponseItem.setStop(stopTime.getStop());
-			stopTimeResponseItem.setTrip(stopTime.getTrip());
-			stopTimeResponseItem.setArrivalTime(stopTime.getArrivalTime());
-			stopTimeResponseItem.setDepartureTime(stopTime.getDepartureTime());
-			stopTimeResponseItem.setStopSequence(stopTime.getStopSequence());
-			stopTimeResponseItem.setTimePoint(stopTime.getTimePoint());
-
-			stopTimesResponse.add(stopTimeResponseItem);
-		}
-
-		return stopTimesResponse;
+		return new SuccessDataResult<List<StopTime>>(this.stopTimeRepository.findAll(),"all stop times returned");
 	}
 
 	@Override
-	public String readFromTxtPushToDb(String txtName) throws FileNotFoundException, ParseException {
+	public Result readFromTxtPushToDb(String txtName) throws FileNotFoundException, ParseException {
 		File file = new File(txtName);
 		List<String> lines = new ArrayList<String>();
 
@@ -179,36 +178,6 @@ public class StopTimeManager implements StopTimeService {
 					}
 				}
 
-				/*
-				 * stopTime.setStop(stopRepository.findById(Integer.valueOf(fields[3])).get());
-				 * stopTime.setTrip(tripRepository.findById(Integer.valueOf(fields[0])).get());
-				 * 
-				 * 
-				 * String arrivalTimeString = fields[1]; LocalTime arrivalTime =
-				 * LocalTime.parse(arrivalTimeString, DateTimeFormatter.ISO_LOCAL_TIME);
-				 * 
-				 * String departureTimeString = fields[2]; LocalTime departureTime =
-				 * LocalTime.parse(departureTimeString, DateTimeFormatter.ISO_LOCAL_TIME);
-				 * 
-				 * 
-				 * int arrivalTimeHour = Integer.valueOf(fields[1].substring(0, 2)); if
-				 * (arrivalTimeHour == 24) { arrivalTimeHour = 00; } int arrivalTimeMinute =
-				 * Integer.valueOf(fields[1].substring(3, 5)); int arrivalTimeSecond =
-				 * Integer.valueOf(fields[1].substring(6)); LocalTime timeArrival =
-				 * LocalTime.of(arrivalTimeHour, arrivalTimeMinute, arrivalTimeSecond);
-				 * 
-				 * int departureTimeHour = Integer.valueOf(fields[2].substring(0, 2)); if
-				 * (departureTimeHour == 24) { departureTimeHour = 00; } int departureTimeMinute
-				 * = Integer.valueOf(fields[2].substring(3, 5)); int departureTimeSecond =
-				 * Integer.valueOf(fields[2].substring(6)); LocalTime timeDeparture =
-				 * LocalTime.of(departureTimeHour, departureTimeMinute, departureTimeSecond);
-				 * 
-				 * stopTime.setArrivalTime(timeArrival);
-				 * stopTime.setDepartureTime(timeDeparture);
-				 * stopTime.setStopSequence(Integer.valueOf(fields[4]));
-				 * stopTime.setTimePoint(Integer.valueOf(fields[5]));
-				 */
-				// add to list
 				stopTimes.add(stopTime);
 			}
 
@@ -218,12 +187,12 @@ public class StopTimeManager implements StopTimeService {
 			this.add(stopTime);
 
 		}
-		return "Veritabanına kaydedildi.";
+		return new SuccessResult("Veritabanına Kaydedildi");
 
 	}
 
 	@Override
-	public String add(StopTime stopTime) {
+	public Result add(StopTime stopTime) {
 
 		StopTime stopTimer = new StopTime();
 		stopTimer.setStopTimeId(stopTime.getStopTimeId());
@@ -235,13 +204,14 @@ public class StopTimeManager implements StopTimeService {
 		stopTimer.setTimePoint(stopTime.getTimePoint());
 		this.stopTimeRepository.save(stopTimer);
 		System.out.println("Eklendi");
-		return stopTimer.toString();
+		return new SuccessResult(stopTimer.toString()+" eklendi");
 
 	}
 
 	@Override
-	public List<StopTime> findAllByTrip_TripId(int id) {
-		return this.stopTimeRepository.findAllByTrip_TripId(id);
+	public DataResult<List<StopTime>> findAllByTrip_TripId(int id) {
+		return new SuccessDataResult<List<StopTime>>(this.stopTimeRepository.findAllByTrip_TripId(id));
+				
 	}
 
 }

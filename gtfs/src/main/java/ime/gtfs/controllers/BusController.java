@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ime.gtfs.business.abstracts.BusService;
+import ime.gtfs.core.utilities.results.DataResult;
+import ime.gtfs.core.utilities.results.Result;
 import ime.gtfs.entities.Bus;
 import ime.gtfs.entities.Info;
 
@@ -28,12 +30,12 @@ public class BusController {
 	}
 
 	@GetMapping("/getallBus")
-	public List<Bus> getAll() {
+	public DataResult<List<Bus>> getAll() {
 		return this.busService.getAll();
 	}
 
 	@PostMapping("/addBus")
-	public String add(@RequestBody Bus bus) {
+	public Result add(@RequestBody Bus bus) {
 		return this.busService.add(bus);
 	}
 
@@ -45,7 +47,7 @@ public class BusController {
 	
 	@GetMapping("/startBus/{busId}")
 	@ResponseBody
-	public Info startBus(@PathVariable(value="busId") int busId) throws IOException {
+	public DataResult<Info> startBus(@PathVariable(value="busId") int busId) throws IOException {
 		return this.busService.startBus(busId);
 	}
 }

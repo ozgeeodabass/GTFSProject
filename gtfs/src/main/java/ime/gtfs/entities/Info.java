@@ -1,7 +1,5 @@
 package ime.gtfs.entities;
 
-import java.util.List;
-
 public class Info {
 
 	private String agencyName;
