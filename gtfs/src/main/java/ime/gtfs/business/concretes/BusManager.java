@@ -8,15 +8,11 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import ime.gtfs.business.abstracts.BusService;
 import ime.gtfs.core.utilities.results.DataResult;
 import ime.gtfs.core.utilities.results.Result;
@@ -165,7 +161,7 @@ public class BusManager implements BusService {
 				+ bus.getRoute().getRouteLongName());
 
 		if (minDiff == -1) {
-			System.out.println("YAKLAŞAN BİR TRIP YOK");
+			System.out.println(busRepository.findById(bus.getBusId()).get().getRoute().getRouteShortName() + " HATTI İÇİN YAKLAŞAN BİR SEFER YOK");
 		} else {
 			nearestTrip = stopTimesOfNearestTrip.get(0).getTrip();
 
@@ -213,31 +209,25 @@ public class BusManager implements BusService {
 
 		}
 
-		/*
-		 * infos.setAgency(bus.getAgency()); infos.setBus(bus);
-		 * infos.setNearestTrip(nearestTrip);
-		 * infos.setStopTimesOfNearestTrip(stopTimesOfNearestTrip);
-		 */
 
 		infos.setAgencyName(bus.getAgency().getAgencyName());
 		infos.setRouteShortName(bus.getRoute().getRouteShortName());
 		infos.setRouteLongName(bus.getRoute().getRouteLongName());
 		
-		if(!Objects.isNull(nearestTrip)) {
+		
 			infos.setNearestTrip(nearestTrip);
 			infos.setNearestStopTime(stopTimeOfNearestTrip);
-		}else if(Objects.isNull(nearestTrip)){
-			infos.setNearestTrip(null);
-			infos.setNearestStopTime(null);
-		}
+		
 		
 		infos.setBusId(bus.getBusId());
 
 		writeToTheTxt(infos);
-		//System.out.println(tripsOfRoute.get(0).getShapes());
-
 		
-		return new SuccessDataResult<Info>(infos);
+		String message="";
+		if(infos.getNearestStopTime()!=null) {
+			message+=infos.getNearestStopTime().getStop().getStopName()+" durağından kalkış için kalan süre: "+ infos.getRemainingTime();
+		}
+		return new SuccessDataResult<Info>(infos,message);
 
 	}
 
@@ -245,17 +235,21 @@ public class BusManager implements BusService {
 
 		String fileName = "infos.txt";
 		File file = new File(fileName);
-
 		JSONObject jsonObj = new JSONObject();
-		jsonObj.append("agency", info.getAgencyName());
-		jsonObj.append("bus", info.getBusId());
-		jsonObj.append("stop_time", info.getNearestStopTime().toString());
-		jsonObj.append("trip", info.getNearestTrip().toString());
-		jsonObj.append("route", info.getRouteShortName() + " " + info.getRouteLongName());
-		jsonObj.append("shapes", info.getNearestTrip().getShapes().toString());
+		
+		if(info.getNearestStopTime()!=null) {
+			
+			jsonObj.append("agency", info.getAgencyName());
+			jsonObj.append("bus", info.getBusId());
+			jsonObj.append("stop_time", info.getNearestStopTime().toString());
+			jsonObj.append("trip", info.getNearestTrip().toString());
+			jsonObj.append("route", info.getRouteShortName() + " " + info.getRouteLongName());
+			jsonObj.append("shapes", info.getNearestTrip().getShapes().toString());
+		}
+		
 
 		if (info.getRemainingTime() == null) {
-			info.setRemainingTime("yaklaşan trip yok");
+			info.setRemainingTime(busRepository.findById(info.getBusId()).get().getRoute().getRouteShortName() + " HATTI İÇİN YAKLAŞAN BİR SEFER YOK");
 			jsonObj.append("remaining time", info.getRemainingTime().toString());
 		} else if (info.getRemainingTime() != null) {
 			jsonObj.append("remaining time", info.getRemainingTime().toString());
