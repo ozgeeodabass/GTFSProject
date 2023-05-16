@@ -140,7 +140,7 @@ public class BusManager implements BusService {
 			int id = stopTimeIds.get(indexx);
 			stopTimeOfNearestTrip = stopTimeRepository.findById(id).get();
 			
-			//min elementn indexini alıp o o şekilde yap burayı
+			
 			int tripId = stopTimes.get(index).getTrip().getTripId();
 
 			for (StopTime stopTime : stopTimes) {
