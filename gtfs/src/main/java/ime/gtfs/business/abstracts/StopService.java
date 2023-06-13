@@ -14,4 +14,6 @@ public interface StopService {
 	Result readFromTxtPushToDb(String txtName)  throws  FileNotFoundException;
 	Result add(Stop stop);
 	DataResult<Stop> getByStopId(int id);
+	DataResult<List<Stop>> getAllByRouteId(int id);
+	DataResult<Stop> findByStopName(String name);
 }

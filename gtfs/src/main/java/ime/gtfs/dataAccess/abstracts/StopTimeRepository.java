@@ -8,4 +8,5 @@ import ime.gtfs.entities.StopTime;
 public interface StopTimeRepository extends JpaRepository<StopTime, Integer> {
 
 	List<StopTime> findAllByTrip_TripId(int id);
+	
 }

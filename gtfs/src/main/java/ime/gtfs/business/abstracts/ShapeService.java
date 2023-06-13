@@ -12,6 +12,6 @@ public interface ShapeService {
 	DataResult<List<Shape>> getAll();
 	Result readFromTxtPushToDb(String txtName)  throws  FileNotFoundException;
 	Result add(Shape shape);
-	//Shape findByShapeId(int id);
+	DataResult<List<Shape>> getAllByTripId(int tripId);
 
 }

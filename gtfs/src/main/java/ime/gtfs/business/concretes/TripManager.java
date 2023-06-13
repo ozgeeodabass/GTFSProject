@@ -138,8 +138,6 @@ public class TripManager implements TripService {
 				
 					trip.setShapes(shapes);
 					
-					
-					
 					break;
 				}
 				case "wheelchair_accessible": {
@@ -175,7 +173,7 @@ public class TripManager implements TripService {
 
 		// add to db
 		for (Trip trip : trips) {
-			this.add(trip);
+			add(trip);
 
 		}
 		return new SuccessResult("Veritabanına kaydedildi");
@@ -192,7 +190,7 @@ public class TripManager implements TripService {
 		tripr.setWheelchairAccessible(trip.getWheelchairAccessible());
 		tripr.setShapes(trip.getShapes());
 		this.tripRepository.save(tripr);
-		System.out.println("Eklendi");
+		System.out.println("Trip Eklendi");
 		return new SuccessResult(tripr.toString()+" eklendi");
 	}
 

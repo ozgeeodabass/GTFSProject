@@ -55,17 +55,6 @@ public class Trip {
 	@JsonIgnore
 	private List<StopTime> stopTimes; 
 	
-	//@Column(name = "shape_id")
-	//private int shapeId;
-	
-	
-	//@ManyToOne
-	//@JsonIgnore
-	//@JoinColumn(name = "bus_id")
-	//private Bus bus;
-
-	
-	//manytomany olarak düzenle
 	@JsonIgnore
     @ManyToMany(cascade = { CascadeType.ALL })
     @JoinTable(

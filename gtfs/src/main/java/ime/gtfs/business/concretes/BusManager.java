@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,11 +20,13 @@ import ime.gtfs.core.utilities.results.Result;
 import ime.gtfs.core.utilities.results.SuccessDataResult;
 import ime.gtfs.core.utilities.results.SuccessResult;
 import ime.gtfs.dataAccess.abstracts.BusRepository;
+import ime.gtfs.dataAccess.abstracts.RouteRepository;
 import ime.gtfs.dataAccess.abstracts.StopTimeRepository;
 import ime.gtfs.dataAccess.abstracts.TripRepository;
 import ime.gtfs.entities.Bus;
 import ime.gtfs.entities.Info;
 import ime.gtfs.entities.Route;
+import ime.gtfs.entities.Stop;
 import ime.gtfs.entities.StopTime;
 import ime.gtfs.entities.Trip;
 
@@ -33,13 +36,16 @@ public class BusManager implements BusService {
 	private BusRepository busRepository;
 	private TripRepository tripRepository;
 	private StopTimeRepository stopTimeRepository;
-	
+	private RouteRepository routeRepository;
+
 	@Autowired
-	public BusManager(BusRepository busRepository, TripRepository tripRepository,StopTimeRepository stopTimeRepository) {
+	public BusManager(BusRepository busRepository, TripRepository tripRepository, StopTimeRepository stopTimeRepository,
+			RouteRepository routeRepository) {
 		super();
 		this.busRepository = busRepository;
 		this.tripRepository = tripRepository;
 		this.stopTimeRepository = stopTimeRepository;
+		this.routeRepository = routeRepository;
 	}
 
 	@Override
@@ -54,8 +60,8 @@ public class BusManager implements BusService {
 		 * 
 		 * busesResponse.add(busResponseItem); }
 		 */
-		
-		return new SuccessDataResult<List<Bus>>(this.busRepository.findAll(), "all buses returned");
+
+		return new SuccessDataResult<List<Bus>>(this.busRepository.findAll(), "Tüm otobüsler listelendi");
 	}
 
 	@Override
@@ -66,17 +72,15 @@ public class BusManager implements BusService {
 		busr.setAgency(bus.getAgency());
 		this.busRepository.save(busr);
 		System.out.println("Eklendi");
-		return new SuccessResult(busr.toString()+" eklendi");
+		return new SuccessResult(busr.toString() + " eklendi");
 	}
 
-	
-	
 	public DataResult<Info> startBus(int busId) throws IOException {
 
-		Bus bus = busRepository.findById(busId).get();	
-		
-		Route route = bus.getRoute();		
-		
+		Bus bus = busRepository.findById(busId).get();
+
+		Route route = bus.getRoute();
+
 		// create info object
 		Info infos = new Info();
 
@@ -97,7 +101,7 @@ public class BusManager implements BusService {
 			}
 
 		}
-		
+
 		// set the nearest trip according to the current time
 		Trip nearestTrip = new Trip();
 
@@ -107,26 +111,24 @@ public class BusManager implements BusService {
 		StopTime stopTimeOfNearestTrip = new StopTime();
 
 		List<StopTime> stopTimesOfNearestTrip = new ArrayList<StopTime>();
-		
+
 		List<Integer> stopTimeIds = new ArrayList<Integer>();
-		
-		// trip bulunmadığı zaman sorun çıkarabilir
+
 		int index = -1;
 
 		for (StopTime stopTime : stopTimes) {
-			
+
 			if (stopTime.getDepartureTime().isAfter(currentTime)) {
-			
+
 				Duration timeDifference = Duration.between(stopTime.getDepartureTime(), currentTime);
-				
-				if(timeDifference.isNegative()) {
-					timeDifference=timeDifference.abs();
+
+				if (timeDifference.isNegative()) {
+					timeDifference = timeDifference.abs();
 				}
-				
+
 				timeDifferences.add(timeDifference);
 				stopTimeIds.add(stopTime.getStopTimeId());
 				index = stopTimes.indexOf(stopTime);
-				System.out.println(index);
 
 			}
 
@@ -134,19 +136,18 @@ public class BusManager implements BusService {
 
 		long minDiff = -1;
 		if (!timeDifferences.isEmpty()) {
-			
+
 			minDiff = Collections.min(timeDifferences).toMinutes();
 			int indexx = timeDifferences.indexOf(Collections.min(timeDifferences));
 			int id = stopTimeIds.get(indexx);
 			stopTimeOfNearestTrip = stopTimeRepository.findById(id).get();
-			
-			
+
 			int tripId = stopTimes.get(index).getTrip().getTripId();
 
 			for (StopTime stopTime : stopTimes) {
 				if (stopTime.getTrip().getTripId() == tripId && stopTime.getDepartureTime().isAfter(currentTime)) {
 					stopTimesOfNearestTrip.add(stopTime);
-	
+
 				}
 
 			}
@@ -161,7 +162,8 @@ public class BusManager implements BusService {
 				+ bus.getRoute().getRouteLongName());
 
 		if (minDiff == -1) {
-			System.out.println(busRepository.findById(bus.getBusId()).get().getRoute().getRouteShortName() + " HATTI İÇİN YAKLAŞAN BİR SEFER YOK");
+			System.out.println(busRepository.findById(bus.getBusId()).get().getRoute().getRouteShortName()
+					+ " HATTI İÇİN YAKLAŞAN BİR SEFER YOK");
 		} else {
 			nearestTrip = stopTimesOfNearestTrip.get(0).getTrip();
 
@@ -170,15 +172,13 @@ public class BusManager implements BusService {
 					+ " Numaralı Trip Bilgileri: ");
 			System.out.println("Nearest Stop Time: ");
 
-					System.out.println("Stop Time: " + stopTimeOfNearestTrip.getStopTimeId() + " Arrival Time: "
-							+ stopTimeOfNearestTrip.getArrivalTime() + " Departure Time: " + stopTimeOfNearestTrip.getDepartureTime()
-							+ " Stop Name: " + stopTimeOfNearestTrip.getStop());
-
-				
+			System.out.println("Stop Time: " + stopTimeOfNearestTrip.getStopTimeId() + " Arrival Time: "
+					+ stopTimeOfNearestTrip.getArrivalTime() + " Departure Time: "
+					+ stopTimeOfNearestTrip.getDepartureTime() + " Stop Name: " + stopTimeOfNearestTrip.getStop());
 
 			// SAAT HESAPLAMALARI
 
-			switch ((minDiff<=59) ? 0 : (minDiff>59) ? 1 : 2) {
+			switch ((minDiff <= 59) ? 0 : (minDiff > 59) ? 1 : 2) {
 			case 0: {
 				Duration remainingTime = Duration.ofMinutes(minDiff);
 				String remainingTimeString = remainingTime.toMinutes() + " dakika";
@@ -208,26 +208,37 @@ public class BusManager implements BusService {
 			}
 
 		}
-
+	
 
 		infos.setAgencyName(bus.getAgency().getAgencyName());
 		infos.setRouteShortName(bus.getRoute().getRouteShortName());
 		infos.setRouteLongName(bus.getRoute().getRouteLongName());
-		
-		
-			infos.setNearestTrip(nearestTrip);
-			infos.setNearestStopTime(stopTimeOfNearestTrip);
-		
-		
+		infos.setNearestTrip(nearestTrip);
+		infos.setNearestStopTime(stopTimeOfNearestTrip);
+		infos.setStop(stopTimeOfNearestTrip.getStop().getStopName());
+		infos.setStopId(stopTimeOfNearestTrip.getStop().getStopId());
 		infos.setBusId(bus.getBusId());
+		infos.setWheechairAccessible(nearestTrip.getWheelchairAccessible());
+		infos.setBikesAllowed(nearestTrip.getBikesAllowed());
+		
+		if(nearestTrip.getServiceId().getSunday()==1) {
+			infos.setService("Pazar"); 
+		}else if(nearestTrip.getServiceId().getSaturday()==1) {
+			infos.setService("Cumartesi");
+		}else if(nearestTrip.getServiceId().getFriday()==1&&nearestTrip.getServiceId().getMonday()==1&&nearestTrip.getServiceId().getThursday()==1&&nearestTrip.getServiceId().getTuesday()==1&&nearestTrip.getServiceId().getWednesday()==1) {
+			infos.setService("Haftaiçi");
+		}
+		
+		infos.setDirection(nearestTrip.getDirectionId()); 
 
 		writeToTheTxt(infos);
-		
-		String message="";
-		if(infos.getNearestStopTime()!=null) {
-			message+=infos.getNearestStopTime().getStop().getStopName()+" durağından kalkış için kalan süre: "+ infos.getRemainingTime();
+
+		String message = "";
+		if (infos.getNearestStopTime() != null) {
+			message += infos.getNearestStopTime().getStop().getStopName() + " durağından kalkış için kalan süre: "
+					+ infos.getRemainingTime();
 		}
-		return new SuccessDataResult<Info>(infos,message);
+		return new SuccessDataResult<Info>(infos, message);
 
 	}
 
@@ -236,20 +247,23 @@ public class BusManager implements BusService {
 		String fileName = "infos.txt";
 		File file = new File(fileName);
 		JSONObject jsonObj = new JSONObject();
-		
-		if(info.getNearestStopTime()!=null) {
-			
+
+		if (info.getNearestStopTime() != null) {
+
 			jsonObj.append("agency", info.getAgencyName());
 			jsonObj.append("bus", info.getBusId());
 			jsonObj.append("stop_time", info.getNearestStopTime().toString());
 			jsonObj.append("trip", info.getNearestTrip().toString());
 			jsonObj.append("route", info.getRouteShortName() + " " + info.getRouteLongName());
 			jsonObj.append("shapes", info.getNearestTrip().getShapes().toString());
+			jsonObj.append("stop", info.getStop().toString());
+			jsonObj.append("service", info.getService());
+			jsonObj.append("direction", info.getDirection());
 		}
-		
 
 		if (info.getRemainingTime() == null) {
-			info.setRemainingTime(busRepository.findById(info.getBusId()).get().getRoute().getRouteShortName() + " HATTI İÇİN YAKLAŞAN BİR SEFER YOK");
+			info.setRemainingTime(busRepository.findById(info.getBusId()).get().getRoute().getRouteShortName()
+					+ " HATTI İÇİN YAKLAŞAN BİR SEFER YOK");
 			jsonObj.append("remaining time", info.getRemainingTime().toString());
 		} else if (info.getRemainingTime() != null) {
 			jsonObj.append("remaining time", info.getRemainingTime().toString());
@@ -279,5 +293,36 @@ public class BusManager implements BusService {
 		}
 
 	}
+
+	@Override
+	public DataResult<List<Bus>> getByRoute(String routeName) {
+
+		return new SuccessDataResult<List<Bus>>(
+				this.busRepository.findAllByRoute(this.routeRepository.findByRouteShortName(routeName)));
+	}
+
+	public DataResult<List<Stop>> getStopsOfBus(int id) {
+		Bus bus = this.busRepository.findById(id).get();
+		List<StopTime> stopTimes = bus.getRoute().getTrips().get(0).getStopTimes();
+		List<Stop> stops = new ArrayList<Stop>();
+		for (StopTime stopTime : stopTimes) {
+			stops.add(stopTime.getStop());
+		}
+
+		return new SuccessDataResult<List<Stop>>(stops, "Duraklar");
+	}
+
+	@Override
+	public DataResult<Bus> getById(int id) {
+		return new SuccessDataResult<Bus>(this.busRepository.findById(id).get());
+	}
+
+	@Override
+	public DataResult<List<Bus>> findAllByRouteId(int id) {
+		return new SuccessDataResult<List<Bus>>(this.busRepository.findAllByRoute_RouteId(id));
+	}
+	
+
+	
 
 }

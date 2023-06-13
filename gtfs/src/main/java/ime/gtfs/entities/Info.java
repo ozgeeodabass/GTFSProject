@@ -8,10 +8,16 @@ public class Info {
 	private Trip nearestTrip;
 	private StopTime nearestStopTime;
 	private String remainingTime;
+	private String stop;
+	private int stopId;
 	private int busId;
+	private int wheechairAccessible;
+	private int bikesAllowed;
+	private String service;
+	private int direction;
 	
 	public Info(String agencyName, String routeShortName, String routeLongName, Trip nearestTrip,
-			StopTime nearestStopTime, String remainingTime,int busId) {
+			StopTime nearestStopTime, String remainingTime,int busId,String stop, int stopId) {
 		super();
 		this.agencyName = agencyName;
 		this.routeShortName = routeShortName;
@@ -20,6 +26,8 @@ public class Info {
 		this.nearestStopTime = nearestStopTime;
 		this.remainingTime = remainingTime;
 		this.busId = busId;
+		this.stop=stop;
+		this.stopId=stopId;
 	}
 
 	public Info() {
@@ -85,6 +93,63 @@ public class Info {
 	
 	public String toString() {
 		return this.agencyName+" "+"bus id"+" "+this.busId+this.routeShortName+" "+this.routeLongName+" "+ "{"+"nearest trip"+" "+ this.nearestTrip+ "}"+"{"+"stop times"+ this.nearestStopTime.toString()+"}"+" "+"remaining time"+ " "+this.remainingTime;
+	}
+
+	public String getStop() {
+		return stop;
+	}
+
+	public void setStop(String stop) {
+		this.stop = stop;
+	}
+	
+
+	public int getStopId() {
+		return stopId;
+	}
+
+	public void setStopId(int stopId) {
+		this.stopId = stopId;
+	}
+
+	public int isWheechairAccessible() {
+		return wheechairAccessible;
+	}
+
+	public void setWheechairAccessible(int wheechairAccessible) {
+		this.wheechairAccessible = wheechairAccessible;
+	}
+
+	public int isBikesAllowed() {
+		return bikesAllowed;
+	}
+
+	public void setBikesAllowed(int bikesAllowed) {
+		this.bikesAllowed = bikesAllowed;
+	}
+
+	public String getService() {
+		return service;
+	}
+
+	public void setService(String service) {
+		this.service = service;
+	}
+
+	public int getDirection() {
+		return direction;
+	}
+
+	public void setDirection(int direction) {
+		this.direction = direction;
+	}
+
+	public int getWheechairAccessible() {
+		return wheechairAccessible;
+	}
+
+	public int getBikesAllowed() {
+		return bikesAllowed;
 	}
 	
 	

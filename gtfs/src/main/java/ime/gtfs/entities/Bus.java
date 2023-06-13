@@ -26,13 +26,6 @@ public class Bus {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int busId;
 	
-	/*
-	 * //800 gibi
-	 * 
-	 * @Column(name = "bus_code") private String busCode; //bu route_short_name mi
-	 * olmalı?
-	 */	
-	
 	@ManyToOne
 	@JoinColumn(name = "route_id")
 	private Route route;
@@ -40,12 +33,6 @@ public class Bus {
 	@ManyToOne()
 	@JoinColumn(name = "agency_id")
 	private Agency agency;
-	
-	//@OneToMany(mappedBy = "bus")
-	//@JsonIgnore
-	//private List<Trip> trips;
-	
-	//trips sil. zaten route da var 
 	
 	
 

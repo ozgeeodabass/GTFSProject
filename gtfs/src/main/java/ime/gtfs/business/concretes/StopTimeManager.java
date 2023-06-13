@@ -17,6 +17,7 @@ import ime.gtfs.core.utilities.results.SuccessResult;
 import ime.gtfs.dataAccess.abstracts.StopRepository;
 import ime.gtfs.dataAccess.abstracts.StopTimeRepository;
 import ime.gtfs.dataAccess.abstracts.TripRepository;
+import ime.gtfs.entities.Stop;
 import ime.gtfs.entities.StopTime;
 import ime.gtfs.entities.Trip;
 
@@ -38,21 +39,6 @@ public class StopTimeManager implements StopTimeService {
 
 	@Override
 	public DataResult<List<StopTime>> getAll() {
-		/*
-		 * List<StopTime> stopTimes = stopTimeRepository.findAll(); List<StopTime>
-		 * stopTimesResponse = new ArrayList<StopTime>();
-		 * 
-		 * for (StopTime stopTime : stopTimes) { StopTime stopTimeResponseItem = new
-		 * StopTime(); stopTimeResponseItem.setStopTimeId(stopTime.getStopTimeId());
-		 * stopTimeResponseItem.setStop(stopTime.getStop());
-		 * stopTimeResponseItem.setTrip(stopTime.getTrip());
-		 * stopTimeResponseItem.setArrivalTime(stopTime.getArrivalTime());
-		 * stopTimeResponseItem.setDepartureTime(stopTime.getDepartureTime());
-		 * stopTimeResponseItem.setStopSequence(stopTime.getStopSequence());
-		 * stopTimeResponseItem.setTimePoint(stopTime.getTimePoint());
-		 * 
-		 * stopTimesResponse.add(stopTimeResponseItem); }
-		 */
 
 		return new SuccessDataResult<List<StopTime>>(this.stopTimeRepository.findAll(),"all stop times returned");
 	}
@@ -114,22 +100,32 @@ public class StopTimeManager implements StopTimeService {
 						int indexOfCol = columnNames.indexOf(column);
 						String data = fields[indexOfCol];
 						int arrivalTimeHour = Integer.valueOf(data.substring(0, 2));
-						if (arrivalTimeHour == 24) {
-							arrivalTimeHour = 00;
+						if(arrivalTimeHour>=24) {
+							arrivalTimeHour= 0+(arrivalTimeHour-24);
 						}
 						int arrivalTimeMinute = Integer.valueOf(data.substring(3, 5));
 						int arrivalTimeSecond = Integer.valueOf(data.substring(6));
 						LocalTime timeArrival = LocalTime.of(arrivalTimeHour, arrivalTimeMinute, arrivalTimeSecond);
 						stopTime.setArrivalTime(timeArrival);
+						/*
+						 * if (arrivalTimeHour == 24) { arrivalTimeHour = 00; } if (arrivalTimeHour ==
+						 * 25) { arrivalTimeHour = 01; }
+						 */
+						
 						break;
 					}
 					case "departure_time": {
 						int indexOfCol = columnNames.indexOf(column);
 						String data = fields[indexOfCol];
 						int departureTimeHour = Integer.valueOf(data.substring(0, 2));
-						if (departureTimeHour == 24) {
-							departureTimeHour = 00;
+						/*
+						 * if (departureTimeHour == 24) { departureTimeHour = 00; } if
+						 * (departureTimeHour == 25) { departureTimeHour = 01; }
+						 */
+						if(departureTimeHour>=24) {
+							departureTimeHour= 0+(departureTimeHour-24);
 						}
+						
 						int departureTimeMinute = Integer.valueOf(data.substring(3, 5));
 						int departureTimeSecond = Integer.valueOf(data.substring(6));
 						LocalTime timeDeparture = LocalTime.of(departureTimeHour, departureTimeMinute,
@@ -182,9 +178,20 @@ public class StopTimeManager implements StopTimeService {
 			}
 
 		}
+		
+		List<Trip> allTrips =tripRepository.findAll();
+			List<Integer> tripIds = new ArrayList<Integer>();
+			for (Trip trip : allTrips) {
+				tripIds.add(trip.getTripId());
+			}
 		// add to db
+			
 		for (StopTime stopTime : stopTimes) {
-			this.add(stopTime);
+			
+			
+			if(tripIds.contains(stopTime.getTrip().getTripId())) {
+				this.add(stopTime);
+			}
 
 		}
 		return new SuccessResult("Veritabanına Kaydedildi");
@@ -208,10 +215,15 @@ public class StopTimeManager implements StopTimeService {
 
 	}
 
+
 	@Override
 	public DataResult<List<StopTime>> findAllByTrip_TripId(int id) {
 		return new SuccessDataResult<List<StopTime>>(this.stopTimeRepository.findAllByTrip_TripId(id));
-				
+	}
+
+	public DataResult<Stop> getStopOfStopTime(int id){
+		StopTime st = this.stopTimeRepository.findById(id).get();
+		return new SuccessDataResult<Stop>(st.getStop());
 	}
 
 }

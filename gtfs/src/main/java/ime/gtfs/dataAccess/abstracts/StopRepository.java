@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import ime.gtfs.entities.Stop;
 
-public interface StopRepository extends JpaRepository<Stop, Integer> {
 
+public interface StopRepository extends JpaRepository<Stop, Integer> {
+	
+	Stop findByStopName(String name);
+	
 }

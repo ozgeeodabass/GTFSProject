@@ -44,7 +44,6 @@ public class StopTime {
 	private LocalTime departureTime;
 	
 	@ManyToOne()
-	@JsonIgnore
 	@JoinColumn(name = "stop_id")
 	private Stop stop;
 	

@@ -3,6 +3,7 @@ package ime.gtfs.controllers;
 import java.io.FileNotFoundException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import ime.gtfs.core.utilities.results.Result;
 import ime.gtfs.entities.Shape;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/shapes")
 public class ShapeController {
 
@@ -41,5 +43,10 @@ public class ShapeController {
 	@ResponseBody
 	public Result readFromTxtPushToDb(@PathVariable(value = "textName") String textName) throws FileNotFoundException {
 		return this.shapeService.readFromTxtPushToDb(textName);
+	}
+	
+	@GetMapping("/getAllByTripId/{tripId}")
+	public DataResult<List<Shape>> getAllByTripId(@PathVariable(value = "tripId")int tripId) {
+		return this.shapeService.getAllByTripId(tripId);
 	}
 }

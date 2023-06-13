@@ -7,43 +7,34 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import ime.gtfs.business.abstracts.StopService;
 import ime.gtfs.core.utilities.results.DataResult;
 import ime.gtfs.core.utilities.results.Result;
 import ime.gtfs.core.utilities.results.SuccessDataResult;
 import ime.gtfs.core.utilities.results.SuccessResult;
 import ime.gtfs.dataAccess.abstracts.StopRepository;
+import ime.gtfs.dataAccess.abstracts.TripRepository;
 import ime.gtfs.entities.Stop;
+import ime.gtfs.entities.StopTime;
+import ime.gtfs.entities.Trip;
 
 @Service
 public class StopManager implements StopService {
 
 	private StopRepository stopRepository;
+	private TripRepository tripRepository;
 
 	@Autowired
-	public StopManager(StopRepository stopRepository) {
+	public StopManager(StopRepository stopRepository,TripRepository tripRepository) {
 		super();
 		this.stopRepository = stopRepository;
+		this.tripRepository=tripRepository;
 	}
 
 	@Override
 	public DataResult<List<Stop>> getAll() {
-		/*List<Stop> stops = stopRepository.findAll();
-		List<Stop> stopsResponse = new ArrayList<Stop>();
-
-		for (Stop stop : stops) {
-			Stop stopResponseItem = new Stop();
-			stopResponseItem.setStopId(stop.getStopId());
-			stopResponseItem.setStopLat(stop.getStopLat());
-			stopResponseItem.setStopLon(stop.getStopLon());
-			stopResponseItem.setStopName(stop.getStopName());
-
-			stopsResponse.add(stopResponseItem);
-		}*/
 
 		return new SuccessDataResult<List<Stop>>(this.stopRepository.findAll(),"all stops returned");
 	}
@@ -192,6 +183,30 @@ public class StopManager implements StopService {
 	public DataResult<Stop> getByStopId(int id) {
 		return new SuccessDataResult<Stop>(this.stopRepository.findById(id).get());
 				
+	}
+
+	@Override
+	public DataResult<List<Stop>> getAllByRouteId(int id) {
+		List<Trip> tripsOfRoute = this.tripRepository.findAllByRoute_RouteId(id);
+		List<List<StopTime>> stopTimes = new ArrayList<List<StopTime>>();
+		for (Trip trip : tripsOfRoute) {
+			stopTimes.add(trip.getStopTimes());
+		}
+		
+		List<Stop> stops = new ArrayList<Stop>();
+		for (List<StopTime> stopTimesList : stopTimes) {
+			for (StopTime stopTime : stopTimesList) {
+				if(!stops.contains(stopTime.getStop())) {
+					stops.add(stopTime.getStop());
+				}
+			}
+		}
+		return new SuccessDataResult<List<Stop>>(stops);
+	}
+
+	@Override
+	public DataResult<Stop> findByStopName(String name) {
+		return new SuccessDataResult<Stop>(this.stopRepository.findByStopName(name));
 	}
 
 }

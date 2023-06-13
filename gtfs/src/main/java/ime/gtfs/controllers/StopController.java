@@ -3,6 +3,7 @@ package ime.gtfs.controllers;
 import java.io.FileNotFoundException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import ime.gtfs.business.abstracts.StopService;
 import ime.gtfs.core.utilities.results.DataResult;
 import ime.gtfs.core.utilities.results.Result;
+import ime.gtfs.core.utilities.results.SuccessDataResult;
 import ime.gtfs.entities.Stop;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/stops")
 public class StopController {
 
@@ -44,5 +47,20 @@ public class StopController {
 		  return this.stopService.readFromTxtPushToDb(textName); 
 		  }
 
+	 
+	 @GetMapping("/getAllByRouteId/{id}")
+	 public DataResult<List<Stop>> getAllByRouteId(@PathVariable(value="id") int id){
+		 return this.stopService.getAllByRouteId(id);
+	 }
+	 
+	 @GetMapping("/getByStopName/{name}")
+	 public DataResult<Stop> findByStopName(@PathVariable(value="name") String name) {
+			return this.stopService.findByStopName(name);
+		}
+	 
+	 @GetMapping("/getByStopId/{id}")
+	 public DataResult<Stop> getByStopId(@PathVariable(value="id") int id) {
+		 return this.stopService.getByStopId(id);
+	 }
 	
 }

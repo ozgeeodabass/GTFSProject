@@ -15,17 +15,21 @@ import ime.gtfs.core.utilities.results.Result;
 import ime.gtfs.core.utilities.results.SuccessDataResult;
 import ime.gtfs.core.utilities.results.SuccessResult;
 import ime.gtfs.dataAccess.abstracts.ShapeRepository;
+import ime.gtfs.dataAccess.abstracts.TripRepository;
 import ime.gtfs.entities.Shape;
+import ime.gtfs.entities.Trip;
 
 @Service
 public class ShapeManager implements ShapeService {
 
 	private ShapeRepository shapeRepository;
+	private TripRepository tripRepository;
 
 	@Autowired
-	public ShapeManager(ShapeRepository shapeRepository) {
+	public ShapeManager(ShapeRepository shapeRepository,TripRepository tripRepository) {
 		super();
 		this.shapeRepository = shapeRepository;
+		this.tripRepository = tripRepository;
 	}
 
 	@Override
@@ -121,25 +125,43 @@ public class ShapeManager implements ShapeService {
 			// add to list
 			shapes.add(shape);
 		}
+		
+		List<Integer> ids = new ArrayList<Integer>();
 
 		// add to db
 		for (Shape shape : shapes) {
-			this.add(shape);
-
+			
+				this.add(shape);
+			
 		}
+		
 		return new SuccessResult("Veritabanına Kaydedildi");
 	}
 
 	@Override
 	public Result add(Shape shape) {
+		List<Shape> shapesInDb = this.getAll().getData();
 		Shape shaper = new Shape();
 		shaper.setShapeId(shape.getShapeId());
 		shaper.setShapePtLat(shape.getShapePtLat());
 		shaper.setShapePtLon(shape.getShapePtLon());
 		shaper.setShapePtSequence(shape.getShapePtSequence());
+		if(!shapesInDb.contains(shape)) {
+		
 		this.shapeRepository.save(shaper);
-		System.out.println("Eklendi");
+		System.out.println("Shape Eklendi");
+		}
 		return new SuccessResult(shaper.toString()+" eklendi");
+		
+	}
+	
+	@Override
+	public DataResult<List<Shape>> getAllByTripId(int tripId) {
+		
+		Trip trip = this.tripRepository.findById(tripId).get();
+		List<Shape> shapes = trip.getShapes();
+		
+		return new SuccessDataResult<List<Shape>>(shapes);
 	}
 
 }
